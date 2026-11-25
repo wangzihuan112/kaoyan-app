@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#4F6EF7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="考研助手">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>考研助手</title>
+<style>
+/* ================= 设计变量 ================= */
+:root{
+  --primary:#4F6EF7; --primary-2:#5B8DEF; --primary-3:#3B5BD9;
+  --bg:#F5F7FA; --tint:#EEF2FF; --card:#FFFFFF;
+  --text:#1A2233; --muted:#5A6478; --white:#FFFFFF;
+  --ok:#34C77B; --bad:#F0506E; --warn:#F5A623;
+  --radius:18px; --shadow:0 4px 18px rgba(26,34,51,.07);
+  --tab-h:62px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{
+  font-family:"PingFang SC","Microsoft YaHei",-apple-system,sans-serif;
+  background:var(--bg); color:var(--text);
+  font-size:15px; line-height:1.5;
+  display:flex; justify-content:center;
+}
+#app{width:100%;max-width:480px;min-height:100%;position:relative;display:flex;flex-direction:column}
+#views{flex:1 0 auto}
+h1{font-size:24px;font-weight:600}
+h2{font-size:17px;font-weight:600}
+button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;font-size:inherit}
+.hidden{display:none!important}
+
+/* ================= 顶部栏 ================= */
+.topbar{display:flex;align-items:flex-end;justify-content:space-between;padding:20px 20px 8px}
+.topbar .sub{color:var(--muted);font-size:13px;margin-top:2px}
+.icon-btn{width:36px;height:36px;border-radius:12px;background:var(--tint);color:var(--primary);font-size:16px;display:flex;align-items:center;justify-content:center}
+
+/* ================= 页面 ================= */
+.page{display:none;padding:6px 16px 30px}
+.page.active{display:block;animation:fadeUp .28s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ================= 卡片 ================= */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-top:14px}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-head span{font-size:13px;color:var(--muted)}
+
+/* ================= 首页看板 ================= */
+.hero{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-3) 100%);color:var(--white);margin-top:10px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.12)}
+.hero::before{content:"";position:absolute;right:30px;bottom:-50px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero-label{font-size:13px;opacity:.85}
+.hero-days{display:flex;align-items:baseline;gap:6px;margin:4px 0}
+.hero-days span{font-size:52px;font-weight:700;line-height:1;letter-spacing:-1px}
+.hero-days small{font-size:15px;opacity:.9}
+.hero-date{font-size:13px;opacity:.85}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.stat-item{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:12px 6px;text-align:center}
+.stat-item b{display:block;font-size:18px;font-weight:700;color:var(--primary)}
+.stat-item i{font-style:normal;font-size:11px;color:var(--muted)}
+.ring-wrap{position:relative;width:120px;margin:4px auto 10px}
+.ring{width:120px;height:120px;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--tint);stroke-width:10}
+.ring-fg{fill:none;stroke:var(--primary);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .5s ease}
+.ring-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.ring-center b{font-size:22px;color:var(--primary)}
+.ring-center small{font-size:11px;color:var(--muted)}
+.task-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--bg)}
+.task-row .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.task-row .t{flex:1;font-size:14px}
+.task-row.done .t{text-decoration:line-through;color:var(--muted)}
+.recent-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--bg);font-size:14px}
+.recent-item .ric{width:30px;height:30px;border-radius:10px;background:var(--tint);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.recent-item .rt{flex:1}
+.recent-item .rt small{display:block;color:var(--muted);font-size:11px}
+
+/* ================= 计划页 ================= */
+.date-strip{display:flex;gap:8px;margin-top:12px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.date-item{flex:0 0 52px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:8px 0;text-align:center;color:var(--muted);font-size:11px;border:2px solid transparent}
+.date-item b{display:block;font-size:17px;color:var(--text);font-weight:600}
+.date-item.sel{border-color:var(--primary);color:var(--primary);background:var(--tint)}
+.date-item.sel b{color:var(--primary)}
+.plan-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--bg)}
+.plan-check{width:22px;height:22px;border-radius:8px;border:2px solid #C9D4F2;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:#fff;transition:all .2s}
+.plan-row.done .plan-check{background:var(--ok);border-color:var(--ok);animation:pop .3s ease}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.plan-bar{width:4px;height:30px;border-radius:2px;flex-shrink:0}
+.plan-body{flex:1;min-width:0}
+.plan-body .pt{font-size:14px;font-weight:500}
+.plan-row.done .plan-body .pt{text-decoration:line-through;color:var(--muted)}
+.plan-body small{color:var(--muted);font-size:11px}
+.plan-del{color:#C0C6D4;font-size:16px;padding:6px}
+.plan-form{display:flex;flex-direction:column;gap:8px;margin-top:10px;padding-top:12px;border-top:1px dashed var(--tint)}
+.plan-form input,.plan-form select{border:1.5px solid #E3E9F5;border-radius:12px;padding:10px 12px;font-size:14px;font-family:inherit;background:var(--bg);color:var(--text);outline:none}
+.plan-form input:focus{border-color:var(--primary)}
+.mini-btn{background:var(--tint);color:var(--primary);border-radius:12px;padding:7px 14px;font-size:13px;font-weight:600}
+.mini-btn.ghost{background:var(--bg);color:var(--muted)}
+.empty{text-align:center;color:#B7BFCE;font-size:13px;padding:18px 0}
+.checkin-btn{width:100%;padding:14px;border-radius:16px;background:linear-gradient(135deg,var(--warn),#F5894B);color:#fff;font-size:16px;font-weight:600;letter-spacing:2px;transition:transform .15s}
+.checkin-btn:active{transform:scale(.97)}
+.checkin-btn.done{background:var(--tint);color:var(--primary);letter-spacing:0}
+
+/* ================= 番茄钟 ================= */
+.pomo-wrap{display:flex;flex-direction:column;align-items:center}
+.pomo-ring{position:relative;width:170px;height:170px;margin:6px 0 12px}
+.pomo-ring svg{width:170px;height:170px;transform:rotate(-90deg)}
+.pomo-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pomo-center b{font-size:38px;font-weight:700;letter-spacing:1px;font-variant-numeric:tabular-nums}
+.pomo-center small{color:var(--muted);font-size:12px;margin-top:2px}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:12px}
+.chip{padding:6px 14px;border-radius:20px;background:var(--bg);color:var(--muted);font-size:13px;border:1.5px solid transparent}
+.chip.sel{background:var(--tint);color:var(--primary);border-color:var(--primary);font-weight:600}
+.pomo-btns{display:flex;gap:10px}
+.pomo-btns button{padding:10px 22px;border-radius:14px;font-size:14px;font-weight:600}
+#pomoMainBtn{background:var(--primary);color:#fff}
+#pomoMainBtn.paused{background:var(--warn)}
+.silent-row{display:flex;align-items:center;gap:12px;margin-top:14px;padding:10px 14px;background:var(--bg);border-radius:14px}
+.silent-label{flex:1;font-size:13px;font-weight:600}
+.silent-label small{display:block;font-weight:400;font-size:11px;color:var(--muted);margin-top:2px}
+.silent-label small b{color:var(--primary);font-weight:600}
+.switch{position:relative;width:46px;height:26px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#C9D4F2;border-radius:26px;transition:.25s}
+.slider:before{content:'';position:absolute;height:20px;width:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.switch input:checked + .slider{background:var(--primary)}
+.switch input:checked + .slider:before{transform:translateX(20px)}
+#pomoResetBtn{background:var(--bg);color:var(--muted)}
+.bars{display:flex;align-items:flex-end;justify-content:space-between;height:110px;padding-top:6px}
+.bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:4px;height:100%;justify-content:flex-end}
+.bar{width:60%;max-width:26px;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,var(--primary-2),var(--primary));min-height:3px;transition:height .4s ease}
+.bar-col.today .bar{background:linear-gradient(180deg,#7AA0FF,var(--primary-3))}
+.bar-col i{font-style:normal;font-size:10px;color:var(--muted)}
+.bar-col.today i{color:var(--primary);font-weight:600}
+
+/* ================= 刷题页 ================= */
+.entry-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.entry-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:left;transition:transform .15s}
+.entry-card:active{transform:scale(.97)}
+.entry-card .eic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:8px}
+.entry-card b{display:block;font-size:15px}
+.entry-card small{color:var(--muted);font-size:12px}
+.exam-setup{display:flex;gap:10px;margin-top:12px}
+.exam-setup select{flex:1;border:1.5px solid #E3E9F5;border-radius:12px;padding:10px;font-size:14px;font-family:inherit;background:var(--bg);outline:none}
+.primary-btn{width:100%;padding:14px;border-radius:16px;background:linear-gradient(135deg,var(--primary),var(--primary-3));color:#fff;font-size:16px;font-weight:600;margin-top:12px;transition:transform .15s}
+.primary-btn:active{transform:scale(.97)}
+.primary-btn:disabled{opacity:.45}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+.q-back{width:34px;height:34px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);color:var(--muted);font-size:16px}
+.q-timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--bad);font-size:16px;background:var(--card);padding:6px 12px;border-radius:12px;box-shadow:var(--shadow)}
+.q-progress{height:5px;border-radius:3px;background:var(--tint);margin-top:12px;overflow:hidden}
+.q-progress i{display:block;height:100%;background:linear-gradient(90deg,var(--primary-2),var(--primary));border-radius:3px;transition:width .3s}
+.q-card{margin-top:14px}
+.q-type{display:inline-block;font-size:11px;color:var(--primary);background:var(--tint);border-radius:6px;padding:2px 8px;margin-bottom:8px}
+.q-stem{font-size:16px;font-weight:600;line-height:1.6;white-space:pre-wrap}
+.opt{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;background:var(--card);border:2px solid #ECEFF6;border-radius:14px;padding:12px 14px;margin-top:10px;font-size:14px;line-height:1.5;transition:all .15s}
+.opt .ol{width:24px;height:24px;border-radius:8px;background:var(--bg);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+.opt.sel{border-color:var(--primary);background:var(--tint)}
+.opt.sel .ol{background:var(--primary);color:#fff}
+.opt.correct{border-color:var(--ok);background:#EAFBF2}
+.opt.correct .ol{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:#FDEFF1}
+.opt.wrong .ol{background:var(--bad);color:#fff}
+.opt:disabled{cursor:default}
+.explain{margin-top:12px;background:#FFFBEF;border:1px solid #F6E7BD;border-radius:14px;padding:12px 14px;font-size:13px;color:#8A6D1F;line-height:1.6;animation:fadeUp .25s ease}
+.explain b{display:block;margin-bottom:4px}
+.q-nav{display:flex;gap:10px;margin-top:16px}
+.q-nav button{flex:1;padding:13px;border-radius:15px;font-size:15px;font-weight:600}
+.q-prev{background:var(--card);color:var(--muted);box-shadow:var(--shadow)}
+.q-next{background:var(--primary);color:#fff}
+.q-next.confirm{background:var(--ok)}
+.score-card{text-align:center;padding:28px 18px}
+.score-num{font-size:56px;font-weight:700;color:var(--primary);line-height:1}
+.score-card p{color:var(--muted);font-size:13px;margin-top:8px}
+.review-item{border-top:1px solid var(--bg);padding:12px 0}
+.review-item .rv-q{font-size:14px;font-weight:500;display:flex;gap:8px}
+.review-item .rv-tag{flex-shrink:0;font-size:12px;font-weight:700}
+.review-item.ok .rv-tag{color:var(--ok)}
+.review-item.bad .rv-tag{color:var(--bad)}
+.review-item .rv-a{font-size:12px;color:var(--muted);margin-top:4px}
+.review-item .rv-e{font-size:12px;color:#8A6D1F;background:#FFFBEF;border-radius:10px;padding:8px 10px;margin-top:6px}
+
+/* ================= 我的页 ================= */
+.mine-row{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--bg);font-size:14px}
+.mine-row b{color:var(--primary)}
+.mine-btns{display:flex;flex-direction:column;gap:10px}
+.mine-btn{width:100%;padding:13px;border-radius:14px;background:var(--tint);color:var(--primary);font-size:14px;font-weight:600;text-align:center}
+.mine-btn.warn{background:#FFF3F4;color:var(--bad)}
+.mine-btn small{display:block;font-weight:400;font-size:11px;color:var(--muted);margin-top:2px}
+details.fmt{margin-top:12px;font-size:13px;color:var(--muted)}
+details.fmt summary{cursor:pointer;color:var(--primary);font-weight:600;padding:6px 0}
+details.fmt pre{background:#1A2233;color:#D9E1F5;border-radius:12px;padding:12px;font-size:11px;line-height:1.6;overflow-x:auto;white-space:pre}
+textarea.import-box{width:100%;height:110px;border:1.5px solid #E3E9F5;border-radius:12px;padding:10px;font-size:12px;font-family:monospace;background:var(--bg);resize:vertical;outline:none}
+
+/* ================= 院校库 ================= */
+.search-input{width:100%;border:1.5px solid #E3E9F5;border-radius:14px;padding:11px 14px;font-size:15px;font-family:inherit;background:var(--bg);outline:none}
+.search-input:focus{border-color:var(--primary)}
+.prov-chips{display:flex;gap:8px;overflow-x:auto;padding:8px 0 2px;-webkit-overflow-scrolling:touch}
+.college-item{display:flex;align-items:center;gap:6px;padding:11px 2px;border-top:1px solid var(--bg)}
+.fav-btn{font-size:20px;color:#C9D4F2;padding:4px 6px;flex-shrink:0}
+.fav-btn.on{color:var(--warn)}
+.cname{flex:1;min-width:0;font-size:15px;font-weight:600}
+.cname small{display:block;font-weight:400;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{display:inline-block;font-size:10px;border-radius:6px;padding:1px 6px;margin-left:4px;font-weight:600;white-space:nowrap}
+.tag-985{background:#FDEFF1;color:var(--bad)}
+.tag-211{background:#FFF6E8;color:var(--warn)}
+.tag-dfyl{background:var(--tint);color:var(--primary)}
+.tag-opto{background:#F3EEFF;color:#9B6EF3}
+.detail-hero{background:linear-gradient(135deg,var(--primary),var(--primary-3));color:#fff;border-radius:var(--radius);padding:20px;margin-top:14px;box-shadow:var(--shadow)}
+.detail-hero h2{font-size:22px}
+.detail-hero .tag{background:rgba(255,255,255,.22);color:#fff;margin-right:4px}
+.note-input{width:100%;border:1.5px solid #E3E9F5;border-radius:12px;padding:10px 12px;font-size:14px;font-family:inherit;background:var(--bg);outline:none;margin-top:8px}
+.note-input:focus{border-color:var(--primary)}
+textarea.note-input{height:84px;resize:vertical}
+.link-btns{display:flex;gap:10px;margin-top:4px}
+.link-btns a{flex:1;text-align:center;padding:12px;border-radius:14px;background:var(--tint);color:var(--primary);font-weight:600;font-size:13px;text-decoration:none}
+
+/* ================= 底部导航 ================= */
+#tabbar{position:sticky;bottom:0;width:100%;max-width:480px;margin:0 auto;height:calc(var(--tab-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;box-shadow:0 -4px 20px rgba(26,34,51,.06);z-index:50}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#9AA3B5;font-size:10px;transition:color .2s}
+.tab svg{width:22px;height:22px;fill:currentColor}
+.tab.active{color:var(--primary);font-weight:600}
+
+/* ================= 弹层 / Toast ================= */
+#modalMask{position:fixed;inset:0;background:rgba(15,20,35,.45);z-index:90;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:20px;padding:22px;width:82%;max-width:340px;animation:pop .25s ease}
+.modal h3{font-size:17px;margin-bottom:14px}
+.modal input[type=date]{width:100%;border:1.5px solid #E3E9F5;border-radius:12px;padding:10px 12px;font-size:15px;font-family:inherit;background:var(--bg)}
+.modal-btns{display:flex;gap:10px;margin-top:16px}
+.modal-btns button{flex:1;padding:11px;border-radius:13px;font-weight:600;font-size:14px}
+.modal-btns .cancel{background:var(--bg);color:var(--muted)}
+.modal-btns .ok{background:var(--primary);color:#fff}
+#toast{position:fixed;left:50%;bottom:calc(var(--tab-h) + 28px);transform:translateX(-50%) translateY(20px);background:rgba(26,34,51,.92);color:#fff;padding:10px 20px;border-radius:22px;font-size:13px;opacity:0;pointer-events:none;transition:all .3s;z-index:99;max-width:80%;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="app">
+  <main id="views">
+
+    <!-- ================= 首页看板 ================= -->
+    <section class="page active" id="page-home">
+      <header class="topbar">
+        <div><h1 id="greeting">你好</h1><p class="sub" id="todayText"></p></div>
+        <button class="icon-btn" id="editExamBtn" title="设置考试日期">✎</button>
+      </header>
+      <div class="card hero">
+        <p class="hero-label">距离考研初试还有</p>
+        <div class="hero-days"><span id="daysLeft">--</span><small>天</small></div>
+        <p class="hero-date" id="examDateText"></p>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-item"><b id="stStreak">0</b><i>连续打卡</i></div>
+        <div class="stat-item"><b id="stToday">0分</b><i>今日时长</i></div>
+        <div class="stat-item"><b id="stAnswered">0</b><i>累计刷题</i></div>
+        <div class="stat-item"><b id="stAccuracy">--</b><i>正确率</i></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>今日任务</h2><span id="taskSummary">0/0</span></div>
+        <div class="ring-wrap">
+          <svg class="ring" viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="52"/>
+            <circle class="ring-fg" id="taskRing" cx="60" cy="60" r="52"/>
+          </svg>
+          <div class="ring-center"><b id="taskPercent">0%</b><small>已完成</small></div>
+        </div>
+        <div id="homeTaskList"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>最近学习</h2></div>
+        <div id="recentList"></div>
+      </div>
+    </section>
+
+    <!-- ================= 学习计划 ================= -->
+    <section class="page" id="page-plan">
+      <header class="topbar"><div><h1>学习计划</h1><p class="sub">制定计划 · 打卡 · 专注</p></div></header>
+      <div class="date-strip" id="dateStrip"></div>
+      <div class="card">
+        <div class="card-head"><h2 id="planDateTitle">今日计划</h2><button class="mini-btn" id="addPlanBtn">＋ 新任务</button></div>
+        <div id="planList"></div>
+        <div class="plan-form hidden" id="planForm">
+          <select id="planSubject"></select>
+          <input type="text" id="planTaskInput" placeholder="输入任务内容，如：背 50 个单词" maxlength="60">
+          <div style="display:flex;gap:10px">
+            <button class="mini-btn ghost" id="planCancelBtn" style="flex:1">取消</button>
+            <button class="mini-btn" id="planSaveBtn" style="flex:2;background:var(--primary);color:#fff">保存任务</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>每日打卡</h2><span id="streakText">连续 0 天</span></div>
+        <button class="checkin-btn" id="checkinBtn">点击打卡</button>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>番茄钟</h2><span id="pomoStateText">专注 25 分钟</span></div>
+        <div class="pomo-wrap">
+          <div class="chip-row" id="pomoSubjectChips"></div>
+          <div class="pomo-ring">
+            <svg viewBox="0 0 170 170">
+              <circle class="ring-bg" cx="85" cy="85" r="74"/>
+              <circle class="ring-fg" id="pomoRing" cx="85" cy="85" r="74" style="stroke:var(--ok)"/>
+            </svg>
+            <div class="pomo-center"><b id="pomoTime">25:00</b><small id="pomoHint">准备开始</small></div>
+          </div>
+          <div class="pomo-btns">
+            <button id="pomoMainBtn">开始专注</button>
+            <button id="pomoResetBtn">重置</button>
+          </div>
+          <div class="silent-row">
+            <div class="silent-label">🔕 图书馆模式<small>到时不响铃、不震动，<b>保留系统通知</b></small></div>
+            <label class="switch"><input type="checkbox" id="pomoSilent"><span class="slider"></span></label>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>本周时长</h2><span id="weekTotal"></span></div>
+        <div class="bars" id="weekBars"></div>
+      </div>
+    </section>
+
+    <!-- ================= 刷题 ================= -->
+    <section class="page" id="page-quiz">
+      <!-- 入口视图 -->
+      <div id="quizHome">
+        <header class="topbar"><div><h1>刷题</h1><p class="sub" id="bankSummary">题库共 0 题</p></div></header>
+        <div class="card">
+          <div class="card-head"><h2>科目筛选</h2></div>
+          <div class="chip-row" id="subjectChips" style="justify-content:flex-start;margin-bottom:0"></div>
+        </div>
+        <div class="entry-grid">
+          <button class="entry-card" id="btnSeq"><div class="eic" style="background:var(--tint);color:var(--primary)">📖</div><b>顺序练习</b><small>按题库顺序逐题作答</small></button>
+          <button class="entry-card" id="btnRand"><div class="eic" style="background:#EAFBF2;color:var(--ok)">🎲</div><b>随机练习</b><small>随机打乱顺序刷题</small></button>
+          <button class="entry-card" id="btnWrong"><div class="eic" style="background:#FDEFF1;color:var(--bad)">📕</div><b>错题重做</b><small id="wrongCount">0 道错题</small></button>
+          <button class="entry-card" id="btnExamHome"><div class="eic" style="background:#FFF6E8;color:var(--warn)">⏱️</div><b>模拟测试</b><small>限时组卷 统一评分</small></button>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>模拟测试设置</h2></div>
+          <div class="exam-setup">
+            <select id="examCount"><option value="10">10 题</option><option value="20" selected>20 题</option><option value="30">30 题</option><option value="50">50 题</option></select>
+            <select id="examMinutes"><option value="15">15 分钟</option><option value="30" selected>30 分钟</option><option value="45">45 分钟</option><option value="60">60 分钟</option></select>
+          </div>
+          <button class="primary-btn" id="btnExamStart">开始模拟测试</button>
+        </div>
+      </div>
+      <!-- 答题视图 -->
+      <div id="quizRun" class="hidden">
+        <div class="q-top">
+          <button class="q-back" id="quizExitBtn">‹</button>
+          <span id="quizProgressText" style="font-size:13px;color:var(--muted)"></span>
+          <span class="q-timer hidden" id="quizTimer">--:--</span>
+        </div>
+        <div class="q-progress"><i id="quizProgressBar" style="width:0%"></i></div>
+        <div class="card q-card" id="quizQuestionCard"></div>
+        <div class="q-nav">
+          <button class="q-prev" id="quizPrevBtn">上一题</button>
+          <button class="q-next" id="quizNextBtn">下一题</button>
+        </div>
+      </div>
+      <!-- 结果视图 -->
+      <div id="quizResult" class="hidden">
+        <div class="card score-card" id="scoreCard"></div>
+        <div class="card" id="reviewList"></div>
+        <button class="primary-btn" id="quizDoneBtn">返回刷题首页</button>
+      </div>
+    </section>
+
+    <!-- ================= 院校库 ================= -->
+    <section class="page" id="page-college">
+      <div id="collegeHome">
+        <header class="topbar"><div><h1>院校库</h1><p class="sub" id="collegeCount"></p></div></header>
+        <div class="card">
+          <input type="search" id="collegeSearch" class="search-input" placeholder="搜索院校名称，如：南京大学">
+          <div class="chip-row" id="collegeTags" style="justify-content:flex-start;margin-top:10px;margin-bottom:0"></div>
+          <div class="prov-chips" id="collegeProvs"></div>
+        </div>
+        <div class="card hidden" id="favCard">
+          <div class="card-head"><h2>我的目标院校</h2></div>
+          <div id="favList"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>全部院校</h2><span id="collegeFilteredCount"></span></div>
+          <div id="collegeList"></div>
+        </div>
+        <p style="font-size:11px;color:#B7BFCE;text-align:center;margin-top:10px">数据仅供参考 · 招生专业、分数线、简章请以研招网及院校官方发布为准</p>
+      </div>
+      <div id="collegeDetail" class="hidden">
+        <div class="q-top">
+          <button class="q-back" id="collegeBackBtn">‹</button>
+          <button class="mini-btn" id="collegeFavBtn">☆ 收藏</button>
+        </div>
+        <div class="detail-hero">
+          <h2 id="cdName"></h2>
+          <div style="margin-top:8px" id="cdTags"></div>
+          <p style="font-size:13px;opacity:.85;margin-top:6px" id="cdProv"></p>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>我的报考笔记</h2></div>
+          <input class="note-input" id="cdMajor" placeholder="目标学院 / 专业，如：计算机学院 软件工程">
+          <textarea class="note-input" id="cdNote" placeholder="分数线、招生人数、参考书、备注…"></textarea>
+          <button class="primary-btn" id="cdSaveBtn" style="margin-top:12px">保存笔记</button>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>查询官方招生信息</h2></div>
+          <div class="link-btns">
+            <a id="cdLinkYz" href="https://yz.chsi.com.cn/sch/" target="_blank" rel="noopener">研招网院校库</a>
+            <a id="cdLinkSearch" target="_blank" rel="noopener">搜索该校研招信息</a>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-top:10px">研招网（中国研究生招生信息网）可查招生简章、专业目录、历年分数线等官方信息。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 我的 ================= -->
+    <section class="page" id="page-mine">
+      <header class="topbar"><div><h1>我的</h1><p class="sub">数据统计 · 题库管理 · 备份</p></div></header>
+      <div class="card">
+        <div class="card-head"><h2>学习统计</h2></div>
+        <div class="mine-row" style="border-top:none"><span>累计学习时长</span><b id="msDuration">0 分钟</b></div>
+        <div class="mine-row"><span>累计刷题</span><b id="msAnswered">0 题</b></div>
+        <div class="mine-row"><span>模拟测试</span><b id="msExams">0 次</b></div>
+        <div class="mine-row"><span>累计打卡</span><b id="msCheckins">0 天</b></div>
+        <div class="mine-row"><span>错题本</span><b id="msWrong">0 题</b></div>
+        <div class="mine-row"><span>目标院校</span><b id="msFavs">0 所</b></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>题库管理</h2><span id="bankCountText"></span></div>
+        <div class="mine-btns">
+          <button class="mine-btn" id="btnImportFile">导入题库 JSON 文件<small>支持 {meta, questions} 或纯题组数组</small></button>
+          <textarea class="import-box" id="importBox" placeholder="也可以把题库 JSON 直接粘贴到这里…"></textarea>
+          <button class="mine-btn" id="btnImportPaste">解析并导入上方粘贴的内容</button>
+          <a class="mine-btn" id="btnSample" href="./questions.json" download style="text-decoration:none">下载示例题库<small>按示例格式整理真题即可批量导入</small></a>
+        </div>
+        <details class="fmt">
+          <summary>题库 JSON 格式说明</summary>
+          <pre>{
+  "meta": { "subject": "数学", "year": 2025 },
+  "questions": [
+    {
+      "id": "m2025-01",          // 可省略，自动生成
+      "type": "single",          // single单选 / multi多选 / judge判断
+      "chapter": "高数",          // 章节，可省略
+      "stem": "题干内容",
+      "options": ["A选项","B","C","D"],
+      "answer": 0,               // 单选/判断填下标0起；多选填数组如 [0,2]
+      "explain": "解析文字",
+      "source": "2025 真题"       // 来源，可省略
+    }
+  ]
+}</pre>
+        </details>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>数据备份</h2></div>
+        <div class="mine-btns">
+          <button class="mine-btn" id="btnExport">导出全部数据备份<small>计划/打卡/时长/题库/错题/成绩 一次性导出</small></button>
+          <button class="mine-btn" id="btnRestore">从备份文件恢复<small>会覆盖当前所有数据，请谨慎操作</small></button>
+          <input type="file" id="restoreFile" accept=".json,application/json" class="hidden">
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>危险操作</h2></div>
+        <div class="mine-btns">
+          <button class="mine-btn warn" id="btnClear">清空全部数据<small>不可恢复，建议先导出备份</small></button>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:11px;color:#B7BFCE;margin-top:12px">考研助手 v1.8 · 数据保存在本机</p>
+    </section>
+  </main>
+
+  <!-- ================= 底部导航 ================= -->
+  <nav id="tabbar">
+    <button class="tab active" data-page="page-home">
+      <svg viewBox="0 0 24 24"><path d="M12 3l9 7.5V21h-6v-6h-6v6H3V10.5L12 3z"/></svg>首页
+    </button>
+    <button class="tab" data-page="page-plan">
+      <svg viewBox="0 0 24 24"><path d="M5 4h14a1 1 0 011 1v15a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1zm2 4v2h10V8H7zm0 4v2h10v-2H7zm0 4v2h7v-2H7z"/></svg>计划
+    </button>
+    <button class="tab" data-page="page-quiz">
+      <svg viewBox="0 0 24 24"><path d="M6 2h12a1 1 0 011 1v18a1 1 0 01-1 1H6a1 1 0 01-1-1V3a1 1 0 011-1zm3 5v2h8V7H9zm0 4v2h8v-2H9zm0 4v2h5v-2H9z"/></svg>刷题
+    </button>
+    <button class="tab" data-page="page-college">
+      <svg viewBox="0 0 24 24"><path d="M12 3 1 8l11 5 9-4.09V15h2V8L12 3zM5 12.66V16c0 1.66 3.13 3 7 3s7-1.34 7-3v-3.34l-7 3.18-7-3.18z"/></svg>院校
+    </button>
+    <button class="tab" data-page="page-mine">
+      <svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 100-9 4.5 4.5 0 000 9zm0 2c-4.5 0-8 2.5-8 5.5V21h16v-1.5c0-3-3.5-5.5-8-5.5z"/></svg>我的
+    </button>
+  </nav>
+</div>
+
+<!-- 日期设置弹窗 -->
+<div id="modalMask" class="hidden">
+  <div class="modal">
+    <h3>设置考研初试日期</h3>
+    <input type="date" id="examDateInput">
+    <div class="modal-btns">
+      <button class="cancel" id="modalCancelBtn">取消</button>
+      <button class="ok" id="modalOkBtn">保存</button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* ================================================================
+ * 考研助手 · 单文件 PWA
+ * 结构：工具 → DB 数据层 → 番茄钟 → 刷题引擎 → 各页面渲染 → 事件绑定 → 初始化
+ * ================================================================ */
+
+// ================= 1. 工具函数 =================
+const $ = s => document.querySelector(s);
+const pad = n => String(n).padStart(2,'0');
+const fmtDate = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const todayStr = () => fmtDate(new Date());
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtMin = sec => { const m=Math.round(sec/60); if(m<60) return m+'分钟'; return Math.floor(m/60)+'小时'+(m%60||'')+'分钟'; };
+const fmtClock = s => pad(Math.floor(s/60))+':'+pad(Math.floor(s%60));
+const shuffle = arr => { const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const WEEK = ['日','一','二','三','四','五','六'];
+let toastTimer = null;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2200); }
+
+/* 番茄钟到时铃声：WebAudio 合成蜂鸣，无需音频文件、离线可用 */
+let pomoAudio=null;
+function beep(times){
+  try{
+    pomoAudio=pomoAudio||new (window.AudioContext||window.webkitAudioContext)();
+    const a=pomoAudio, t0=a.currentTime;
+    for(let i=0;i<times;i++){
+      const o=a.createOscillator(), g=a.createGain();
+      o.connect(g); g.connect(a.destination);
+      o.type='sine'; o.frequency.value=880;
+      g.gain.setValueAtTime(0.001,t0+i*0.5);
+      g.gain.exponentialRampToValueAtTime(0.5,t0+i*0.5+0.04);
+      g.gain.exponentialRampToValueAtTime(0.001,t0+i*0.5+0.4);
+      o.start(t0+i*0.5); o.stop(t0+i*0.5+0.45);
+    }
+  }catch(e){}
+}
+const SUBJECT_COLORS = {'政治':'#F5A623','英语':'#34C77B','数学':'#4F6EF7','专业课':'#9B6EF3'};
+const FALLBACK_COLORS = ['#5B8DEF','#34C77B','#F5A623','#9B6EF3','#F0506E','#3BB8C7'];
+function subjectColor(sub){
+  if(SUBJECT_COLORS[sub]) return SUBJECT_COLORS[sub];
+  let h=0; for(const c of String(sub||'')) h=(h*31+c.charCodeAt(0))>>>0;
+  return FALLBACK_COLORS[h%FALLBACK_COLORS.length];
+}
+
+// ================= 2. DB 数据层 =================
+const DB = {
+  key:'kaoyan_db_v1',
+  data:null,
+  load(){
+    try{ const raw=localStorage.getItem(this.key); this.data = raw ? JSON.parse(raw) : null; }
+    catch(e){ console.error('DB load error', e); this.data=null; }
+    if(!this.data || typeof this.data!=='object') this.data = this.seed();
+    this.migrate();
+  },
+  save(){
+    try{ localStorage.setItem(this.key, JSON.stringify(this.data)); }
+    catch(e){ toast('保存失败：本地存储空间不足'); }
+  },
+  migrate(){
+    const d=this.data;
+    d.plans=d.plans||[]; d.checkins=d.checkins||{}; d.sessions=d.sessions||[];
+    d.questions=d.questions||[]; d.wrongBook=d.wrongBook||{}; d.exams=d.exams||[]; d.collegeNotes=d.collegeNotes||{};
+    d.answered=d.answered||0; d.correct=d.correct||0;
+    d.settings=Object.assign({examDate:'2027-12-25', pomodoroMin:25, pomodoroSubject:'物理光学'}, d.settings||{});
+    if(d.settings.examDate==='2026-12-19') d.settings.examDate='2027-12-25'; // 27考研旧默认值迁移为28考研
+    // 光电专业科目迁移：旧示例科目 → 数二/英二/物理光学
+    const SUB_RENAME={'英语':'英语二','英语一':'英语二','数学':'数学二','数学一':'数学二','数学三':'数学二','专业课':'物理光学'};
+    const rs=s=>SUB_RENAME[s]||s;
+    d.plans.forEach(p=>{ p.subject=rs(p.subject); });
+    d.sessions.forEach(s=>{ s.subject=rs(s.subject); });
+    d.questions.forEach(q=>{ q.subject=rs(q.subject); });
+    d.settings.pomodoroSubject=rs(d.settings.pomodoroSubject);
+    // 默认目标院校（首次使用自动收藏；手动取消收藏后不会被重复加回）
+    ['南昌大学','安徽大学'].forEach(name=>{
+      if(!d.collegeNotes[name]) d.collegeNotes[name]={fav:true,major:'',note:''};
+    });
+  },
+  seed(){
+    return {
+      plans:[
+        {id:uid(), date:todayStr(), subject:'英语二', task:'背 50 个考研核心词', done:false},
+        {id:uid(), date:todayStr(), subject:'数学二', task:'高数第三章例题 10 道', done:false},
+        {id:uid(), date:todayStr(), subject:'物理光学', task:'偏振一章：马吕斯定律例题 5 道', done:false}
+      ],
+      checkins:{},
+      sessions:[],
+      answered:0, correct:0,
+      questions:[
+        {id:'p-01',type:'single',subject:'政治',chapter:'马原',stem:'马克思主义哲学认为，世界的本原是：',options:['物质','意识','实践','矛盾'],answer:0,explain:'马克思主义哲学是唯物主义一元论，认为世界的本原是物质，物质决定意识。',source:'示例题库'},
+        {id:'p-02',type:'judge',subject:'政治',chapter:'马原',stem:'矛盾的普遍性寓于特殊性之中，并通过特殊性表现出来。',options:['正确','错误'],answer:0,explain:'矛盾普遍性与特殊性的辩证关系：普遍性寓于特殊性之中，特殊性包含普遍性。',source:'示例题库'},
+        {id:'e-01',type:'single',subject:'英语二',chapter:'词汇',stem:'The two sides finally reached a ______ after hours of negotiation.',options:['compromise','complaint','complexity','component'],answer:0,explain:'compromise 意为"妥协、折中方案"，reached a compromise 为固定搭配"达成妥协"。',source:'示例题库'},
+        {id:'e-02',type:'single',subject:'英语二',chapter:'语法',stem:'He is committed to ______ the project on time.',options:['finish','finishing','finished','be finished'],answer:1,explain:'be committed to 中 to 为介词，后接动名词 finishing。',source:'示例题库'},
+        {id:'m-01',type:'single',subject:'数学二',chapter:'高数',stem:'极限 lim(x→0) sin x / x 的值为：',options:['0','1','∞','不存在'],answer:1,explain:'重要极限：lim(x→0) sin x / x = 1。',source:'示例题库'},
+        {id:'m-02',type:'single',subject:'数学二',chapter:'高数',stem:'函数 f(x) = x³ − 3x 的极大值为：',options:['−2','0','2','4'],answer:2,explain:"f'(x)=3x²−3=0 得 x=±1。f''(−1)=−6<0，x=−1 为极大值点，f(−1)=−1+3=2。",source:'示例题库'},
+        {id:'m-03',type:'multi',subject:'数学二',chapter:'线代',stem:'下列矩阵中一定可对角化的有：',options:['实对称矩阵','特征值含复数的矩阵','有 n 个线性无关特征向量的 n 阶矩阵','特征值均为单根的矩阵'],answer:[0,2,3],explain:'实对称矩阵必可正交对角化；有 n 个线性无关特征向量即可对角化；特征值均为单根时每个特征值几何重数为 1，必可对角化。',source:'示例题库'},
+        {id:'m-04',type:'judge',subject:'数学二',chapter:'线代',stem:'若矩阵 A 可逆，则其转置矩阵 Aᵀ 也可逆。',options:['正确','错误'],answer:0,explain:'|Aᵀ|=|A|≠0，故 Aᵀ 可逆，且 (Aᵀ)⁻¹=(A⁻¹)ᵀ。',source:'示例题库'},
+        {id:'po-01',type:'single',subject:'物理光学',chapter:'几何光学',stem:'光从空气射入折射率 n=1.5 的玻璃，入射角为 45°，折射角约为：',options:['28.1°','30.0°','35.3°','41.8°'],answer:0,explain:'折射定律 n₁sin i = n₂sin γ：sin γ = sin45°/1.5 ≈ 0.471，γ ≈ 28.1°。',source:'物理光学示例题库'},
+        {id:'po-02',type:'single',subject:'物理光学',chapter:'双缝干涉',stem:'杨氏双缝干涉实验中，波长 λ=500nm，双缝间距 d=0.2mm，屏距 D=1m，相邻亮条纹间距为：',options:['0.5mm','1.25mm','2.5mm','5mm'],answer:2,explain:'条纹间距 Δx = λD/d = 500×10⁻⁹ × 1 / (0.2×10⁻³) = 2.5×10⁻³ m = 2.5mm。',source:'物理光学示例题库'},
+        {id:'po-03',type:'single',subject:'物理光学',chapter:'半波损失',stem:'下列哪种情形中，反射光存在半波损失（π 的相位突变）？',options:['光从光密介质射向光疏介质，垂直入射','光从光疏介质射向光密介质，垂直入射','光从光密介质射向光疏介质，掠入射','以上都不存在'],answer:1,explain:'光从光疏介质射向光密介质，在接近垂直入射或掠入射时，界面反射光会产生 π 相位突变，即半波损失；从光密到光疏反射时无半波损失。',source:'物理光学示例题库'},
+        {id:'po-04',type:'single',subject:'物理光学',chapter:'等厚干涉',stem:'用反射光观察牛顿环干涉图样，其中心为：',options:['亮斑','暗斑','明暗交替','视接触情况而定，必为亮斑'],answer:1,explain:'中心接触处空气膜厚度 e=0，反射光中因半波损失光程差为 λ/2，两束反射光相消，故中心为暗斑。',source:'物理光学示例题库'},
+        {id:'po-05',type:'single',subject:'物理光学',chapter:'单缝衍射',stem:'夫琅禾费单缝衍射中，第一级暗纹方向对应把单缝波面分成几个半波带？',options:['1 个','2 个','3 个','4 个'],answer:1,explain:'暗纹条件 a sinθ = ±kλ（k=1,2,…）。第一级暗纹 a sinθ = λ，缝面恰分成 2 个半波带，两两相消。',source:'物理光学示例题库'},
+        {id:'po-06',type:'single',subject:'物理光学',chapter:'衍射光栅',stem:'每毫米刻有 500 条刻线的光栅，对波长 600nm 的单色光，其第一级主极大衍射角约为：',options:['17.5°','26.7°','36.9°','45.6°'],answer:0,explain:'光栅常数 d = 1mm/500 = 2μm。光栅方程 d sinθ = kλ：sinθ = 600×10⁻⁹/2×10⁻⁶ = 0.3，θ ≈ 17.5°。',source:'物理光学示例题库'},
+        {id:'po-07',type:'judge',subject:'物理光学',chapter:'光的偏振',stem:'根据马吕斯定律，强度为 I₀ 的线偏振光通过偏振片，当偏振化方向与光振动方向夹角为 60° 时，透射光强为 I₀/4。',options:['正确','错误'],answer:0,explain:'马吕斯定律 I = I₀cos²α，α=60° 时 cos²60° = 1/4，透射光强为 I₀/4。',source:'物理光学示例题库'},
+        {id:'po-08',type:'single',subject:'物理光学',chapter:'光的偏振',stem:'光从空气射向折射率 n=1.5 的玻璃，起偏角（布儒斯特角）约为：',options:['33.7°','45.0°','56.3°','60.0°'],answer:2,explain:'布儒斯特定律 tan iB = n₂/n₁ = 1.5，iB ≈ 56.3°（此时反射光为完全线偏振光，折射光与反射光垂直）。',source:'物理光学示例题库'},
+        {id:'po-09',type:'multi',subject:'物理光学',chapter:'光的偏振',stem:'下列关于偏振光的说法中正确的有：',options:['线偏振光垂直通过 1/4 波片，出射光一般为椭圆偏振光','自然光通过理想偏振片后，光强减半','线偏振光通过与其振动方向垂直的偏振片，出射光强为零','自然光通过 1/4 波片后变为圆偏振光'],answer:[0,1,2],explain:'1/4 波片只对线偏振光起作用，自然光通过波片仍是自然光，D 错误；A：当振动方向不沿快/慢轴时，o、e 光振幅相等相位差 π/2，一般合成为椭圆偏振光；B：自然光各方向振动均匀，通过理想偏振片强度减半；C：与偏振化方向垂直的分量被完全阻止。',source:'物理光学示例题库'},
+        {id:'po-10',type:'judge',subject:'物理光学',chapter:'光的干涉',stem:'频率相同、振动方向相同（或有平行的振动分量）、相位差恒定，是两束光发生干涉的必要条件。',options:['正确','错误'],answer:0,explain:'相干三条件：频率相同、存在相互平行的振动分量、相位差恒定。普通光源发光的随机性使得这三条（尤其相位差恒定）必须借助分波前或分振幅法来满足。',source:'物理光学示例题库'}
+      ],
+      wrongBook:{},
+      exams:[],
+      settings:{examDate:'2027-12-25', pomodoroMin:25, pomodoroSubject:'物理光学'}
+    };
+  },
+  subjects(){
+    const set=new Set(['政治','英语二','数学二','物理光学']);
+    this.data.questions.forEach(q=>{ if(q.subject) set.add(q.subject); });
+    return [...set];
+  },
+  /* ---- 统计计算 ---- */
+  streak(){
+    let n=0; const d=new Date();
+    if(!this.data.checkins[fmtDate(d)]) d.setDate(d.getDate()-1);
+    while(this.data.checkins[fmtDate(d)]){ n++; d.setDate(d.getDate()-1); }
+    return n;
+  },
+  durationOn(dateStr){
+    return this.data.sessions.filter(s=>s.date===dateStr).reduce((t,s)=>t+(s.seconds||0),0);
+  },
+  totalDuration(){
+    return this.data.sessions.reduce((t,s)=>t+(s.seconds||0),0);
+  },
+  accuracy(){
+    if(!this.data.answered) return null;
+    return Math.round(this.data.correct/this.data.answered*100);
+  },
+  addSession(subject, seconds, source){
+    if(seconds<30) return;
+    this.data.sessions.push({date:todayStr(), subject:subject||'未分类', seconds:Math.round(seconds), source:source||'manual'});
+    this.save();
+  }
+};
+
+// ================= 3. 页面切换 =================
+let currentPage='page-home';
+function switchPage(id){
+  currentPage=id;
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id===id));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.page===id));
+  if(id==='page-home') renderHome();
+  if(id==='page-plan') Plan.render();
+  if(id==='page-quiz') Quiz.renderHome();
+  if(id==='page-college'){ College.render(); $('#collegeHome').classList.remove('hidden'); $('#collegeDetail').classList.add('hidden'); }
+  if(id==='page-mine') renderMine();
+  window.scrollTo(0,0);
+}
+
+// ================= 4. 首页看板 =================
+function renderHome(){
+  const d=DB.data, now=new Date(), h=now.getHours();
+  $('#greeting').textContent = h<6?'夜深了':h<11?'早上好':h<14?'中午好':h<18?'下午好':'晚上好';
+  $('#todayText').textContent = now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 · 星期'+WEEK[now.getDay()];
+
+  // 倒计时
+  const exam=new Date(d.settings.examDate+'T00:00:00');
+  const diff=Math.ceil((exam-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/86400000);
+  $('#daysLeft').textContent = diff>0?diff:(diff===0?'0':diff);
+  const favs=Object.keys(d.collegeNotes||{}).filter(k=>d.collegeNotes[k].fav);
+  $('#examDateText').textContent = d.settings.examDate + (diff>=0?' · 一研为定，全力以赴':' · 考试已结束') + (favs.length?' · 目标：'+favs.slice(0,2).join(' / '):'');
+
+  // 统计
+  $('#stStreak').textContent = DB.streak();
+  $('#stToday').textContent = Math.round(DB.durationOn(todayStr())/60)+'分';
+  $('#stAnswered').textContent = d.answered;
+  const acc=DB.accuracy(); $('#stAccuracy').textContent = acc==null?'--':acc+'%';
+
+  // 今日任务
+  const plans=d.plans.filter(p=>p.date===todayStr());
+  const done=plans.filter(p=>p.done).length;
+  $('#taskSummary').textContent = done+'/'+plans.length;
+  $('#taskPercent').textContent = plans.length?Math.round(done/plans.length*100)+'%':'--';
+  const C=2*Math.PI*52;
+  const ring=$('#taskRing');
+  ring.style.strokeDasharray=C;
+  ring.style.strokeDashoffset=C*(plans.length?1-done/plans.length:1);
+  $('#homeTaskList').innerHTML = plans.length
+    ? plans.map(p=>`<div class="task-row ${p.done?'done':''}"><span class="dot" style="background:${subjectColor(p.subject)}"></span><span class="t">${esc(p.task)}</span></div>`).join('')
+    : '<div class="empty">今天还没有安排任务，去「计划」页添加吧</div>';
+
+  // 最近学习（时长记录 + 测试成绩 混合，按时间倒序取 5 条）
+  const items=[];
+  d.sessions.slice(-8).forEach(s=>items.push({ic:'⏱',t:`${esc(s.subject)} 专注 ${Math.round(s.seconds/60)} 分钟`,sub:s.date}));
+  d.exams.slice(-5).forEach(e=>items.push({ic:'📝',t:`模拟测试 ${e.correct}/${e.total} 分`,sub:e.date}));
+  $('#recentList').innerHTML = items.length
+    ? items.slice(-5).reverse().map(it=>`<div class="recent-item"><span class="ric">${it.ic}</span><span class="rt">${it.t}<small>${it.sub}</small></span></div>`).join('')
+    : '<div class="empty">暂无学习记录，开始第一次专注吧</div>';
+}
+
+// ================= 5. 学习计划页 =================
+const Plan = {
+  selected: todayStr(),
+  render(){
+    // 7 日日期条（今天前 3 天到后 3 天）
+    const base=new Date(); base.setDate(base.getDate()-3);
+    let html='';
+    for(let i=0;i<7;i++){
+      const dt=new Date(base); dt.setDate(base.getDate()+i);
+      const ds=fmtDate(dt);
+      html+=`<button class="date-item ${ds===this.selected?'sel':''}" data-date="${ds}">${ds===todayStr()?'今天':WEEK[dt.getDay()]}<b>${dt.getDate()}</b></button>`;
+    }
+    $('#dateStrip').innerHTML=html;
+    document.querySelectorAll('.date-item').forEach(b=>b.addEventListener('click',()=>{ this.selected=b.dataset.date; this.render(); }));
+    $('#planDateTitle').textContent = this.selected===todayStr()?'今日计划':this.selected.slice(5)+' 计划';
+
+    // 任务列表
+    const plans=DB.data.plans.filter(p=>p.date===this.selected);
+    $('#planList').innerHTML = plans.length
+      ? plans.map(p=>`
+        <div class="plan-row ${p.done?'done':''}" data-id="${p.id}">
+          <button class="plan-check">${p.done?'✓':''}</button>
+          <span class="plan-bar" style="background:${subjectColor(p.subject)}"></span>
+          <div class="plan-body"><div class="pt">${esc(p.task)}</div><small>${esc(p.subject)}</small></div>
+          <button class="plan-del">✕</button>
+        </div>`).join('')
+      : '<div class="empty">这一天还没有任务</div>';
+    document.querySelectorAll('.plan-row').forEach(row=>{
+      const id=row.dataset.id, plan=DB.data.plans.find(p=>p.id===id);
+      row.querySelector('.plan-check').addEventListener('click',()=>{
+        plan.done=!plan.done; DB.save();
+        if(plan.done && this.selected===todayStr()) toast('任务完成，继续加油！');
+        this.render();
+      });
+      row.querySelector('.plan-del').addEventListener('click',()=>{
+        DB.data.plans=DB.data.plans.filter(p=>p.id!==id); DB.save(); this.render();
+      });
+    });
+
+    // 科目下拉
+    const subs=DB.subjects();
+    $('#planSubject').innerHTML = subs.map(s=>`<option>${esc(s)}</option>`).join('');
+    $('#planForm').classList.add('hidden');
+    $('#planTaskInput').value='';
+
+    // 打卡
+    const ck=DB.data.checkins[todayStr()];
+    const btn=$('#checkinBtn');
+    if(ck){ btn.textContent='已打卡 '+ck.time; btn.classList.add('done'); btn.disabled=true; }
+    else{ btn.textContent='点击打卡'; btn.classList.remove('done'); btn.disabled=false; }
+    $('#streakText').textContent='连续 '+DB.streak()+' 天';
+
+    // 本周时长柱状图
+    const days=[], vals=[];
+    let maxV=1;
+    for(let i=6;i>=0;i--){
+      const dt=new Date(); dt.setDate(dt.getDate()-i);
+      const ds=fmtDate(dt), v=DB.durationOn(ds);
+      days.push(ds===todayStr()?'今天':WEEK[dt.getDay()]); vals.push(v);
+      if(v>maxV) maxV=v;
+    }
+    $('#weekBars').innerHTML = days.map((label,i)=>`<div class="bar-col ${i===6?'today':''}"><div class="bar" style="height:${Math.max(3,Math.round(vals[i]/maxV*82))}%"></div><i>${label}</i></div>`).join('');
+    const weekSum=vals.reduce((a,b)=>a+b,0);
+    $('#weekTotal').textContent='共 '+fmtMin(weekSum);
+
+    Pomo.renderChips(); Pomo.render();
+  }
+};
+// 新任务表单
+$('#addPlanBtn').addEventListener('click',()=>{ $('#planForm').classList.remove('hidden'); $('#planTaskInput').focus(); });
+$('#planCancelBtn').addEventListener('click',()=>$('#planForm').classList.add('hidden'));
+$('#planSaveBtn').addEventListener('click',()=>{
+  const task=$('#planTaskInput').value.trim();
+  if(!task){ toast('请输入任务内容'); return; }
+  DB.data.plans.push({id:uid(), date:Plan.selected, subject:$('#planSubject').value, task, done:false});
+  DB.save(); Plan.render(); toast('任务已添加');
+});
+// 打卡
+$('#checkinBtn').addEventListener('click',()=>{
+  const t=new Date(), key=todayStr();
+  if(DB.data.checkins[key]) return;
+  DB.data.checkins[key]={time:pad(t.getHours())+':'+pad(t.getMinutes())};
+  DB.save(); Plan.render(); toast('打卡成功，连续 '+DB.streak()+' 天！');
+});
+
+// ================= 6. 番茄钟模块 =================
+const Pomo = {
+  state:'idle',            // idle | running | paused
+  acc:0,                   // 已累计秒数（暂停时冻结）
+  startTs:0,               // 本轮开始时间戳
+  subject:'数学',
+  timerId:null,
+  elapsed(){
+    return this.state==='running' ? this.acc + (Date.now()-this.startTs)/1000 : this.acc;
+  },
+  total(){ return DB.data.settings.pomodoroMin*60; },
+  renderChips(){
+    const subs=DB.subjects();
+    this.subject=DB.data.settings.pomodoroSubject;
+    if(!subs.includes(this.subject)) this.subject=subs[0];
+    $('#pomoSubjectChips').innerHTML = subs.map(s=>`<button class="chip ${s===this.subject?'sel':''}" data-sub="${esc(s)}">${esc(s)}</button>`).join('');
+    document.querySelectorAll('#pomoSubjectChips .chip').forEach(b=>{
+      b.addEventListener('click',()=>{
+        if(this.state!=='idle'){ toast('专注进行中，不能切换科目'); return; }
+        this.subject=b.dataset.sub; DB.data.settings.pomodoroSubject=this.subject; DB.save(); this.renderChips();
+      });
+    });
+  },
+  render(){
+    const C=2*Math.PI*74, ring=$('#pomoRing');
+    ring.style.strokeDasharray=C;
+    const remain=Math.max(0,this.total()-this.elapsed());
+    $('#pomoTime').textContent=fmtClock(Math.ceil(remain));
+    ring.style.strokeDashoffset=C*(remain/this.total());
+    $('#pomoStateText').textContent = this.state==='idle'
+      ? '专注 '+DB.data.settings.pomodoroMin+' 分钟'
+      : (this.state==='running'?'专注中 · '+this.subject:'已暂停 · '+this.subject);
+    const main=$('#pomoMainBtn');
+    main.textContent = this.state==='running'?'暂停':(this.state==='paused'?'继续':'开始专注');
+    main.classList.toggle('paused', this.state==='paused');
+    $('#pomoHint').textContent = this.state==='idle'?'准备开始':(this.state==='running'?'保持专注':'休息一下');
+    if(this.state==='running' && !this.timerId){
+      this.timerId=setInterval(()=>{ if(this.state!=='running'){ return; } this.render(); if(this.elapsed()>=this.total()) this.finish(true); },300);
+    }
+    if(this.state!=='running' && this.timerId){ clearInterval(this.timerId); this.timerId=null; }
+  },
+  toggle(){
+    if(this.state==='idle'){
+      this.acc=0; this.startTs=Date.now(); this.state='running';
+      // 借助用户点击手势初始化音频通道与通知授权（到时才能响铃/推送）
+      try{ pomoAudio=pomoAudio||new (window.AudioContext||window.webkitAudioContext)(); if(pomoAudio.resume) pomoAudio.resume(); }catch(e){}
+      if(window.Notification && Notification.permission==='default'){ try{ Notification.requestPermission(); }catch(e){} }
+      toast('开始专注 '+DB.data.settings.pomodoroMin+' 分钟');
+    }
+    else if(this.state==='running'){ this.acc+=(Date.now()-this.startTs)/1000; this.state='paused'; }
+    else if(this.state==='paused'){ this.startTs=Date.now(); this.state='running'; }
+    this.render();
+  },
+  reset(){
+    // 未完成的专注：已超过 1 分钟则按实际分钟记入时长
+    const el=this.elapsed();
+    if(el>=60){ DB.addSession(this.subject, el, 'pomodoro'); toast('已记录 '+Math.floor(el/60)+' 分钟专注时长'); }
+    this.state='idle'; this.acc=0; this.render();
+  },
+  finish(complete){
+    this.state='idle'; this.acc=0;
+    if(complete){
+      DB.addSession(this.subject, this.total(), 'pomodoro');
+      toast('🍅 番茄钟完成！已记录 '+DB.data.settings.pomodoroMin+' 分钟'+(DB.data.settings.silentMode?'（图书馆模式）':'，休息一下吧'));
+      // 系统通知：两种模式都发送
+      if(window.Notification && Notification.permission==='granted'){
+        try{ new Notification('🍅 番茄钟完成', {body:'已完成 '+DB.data.settings.pomodoroMin+' 分钟专注，起来活动一下吧！'}); }catch(e){}
+      }
+      if(!DB.data.settings.silentMode){
+        beep(3);   // 铃声三响
+        if(navigator.vibrate) navigator.vibrate([300,150,300,150,600]);  // 长震动节奏
+      }
+    }
+    this.render(); renderHome();
+  }
+};
+$('#pomoMainBtn').addEventListener('click',()=>Pomo.toggle());
+$('#pomoSilent').addEventListener('change',function(){
+  DB.data.settings.silentMode=this.checked; DB.save();
+  toast(this.checked?'🔕 图书馆模式已开启：到时静音提示':'图书馆模式已关闭：到时响铃提醒');
+});
+$('#pomoResetBtn').addEventListener('click',()=>Pomo.reset());
+
+// ================= 7. 刷题引擎 =================
+const Quiz = {
+  filterSubject:'全部',
+  state:null,   // {mode,list,idx,answers,judged,startTs,limitMs,timerId}
+  // ---- 入口视图 ----
+  renderHome(){
+    const qs=DB.data.questions, wrongIds=Object.keys(DB.data.wrongBook);
+    $('#bankSummary').textContent='题库共 '+qs.length+' 题 · 错题 '+wrongIds.length+' 道';
+    $('#wrongCount').textContent=wrongIds.length+' 道错题';
+    const subs=['全部'].concat(DB.subjects());
+    if(!subs.includes(this.filterSubject)) this.filterSubject='全部';
+    $('#subjectChips').innerHTML = subs.map(s=>`<button class="chip ${s===this.filterSubject?'sel':''}" data-sub="${esc(s)}">${esc(s)}</button>`).join('');
+    document.querySelectorAll('#subjectChips .chip').forEach(b=>b.addEventListener('click',()=>{ this.filterSubject=b.dataset.sub; this.renderHome(); }));
+  },
+  pool(){
+    const qs=DB.data.questions;
+    return this.filterSubject==='全部' ? qs : qs.filter(q=>q.subject===this.filterSubject);
+  },
+  // ---- 开始 ----
+  startPractice(random, wrongOnly){
+    let list=this.pool();
+    if(wrongOnly){
+      const wb=DB.data.wrongBook;
+      list=list.filter(q=>wb[q.id]);
+      if(!list.length){ toast('错题本是空的，先去刷几道题吧'); return; }
+    }
+    if(!list.length){ toast('当前筛选下题库为空'); return; }
+    if(random) list=shuffle(list);
+    this.begin({mode:'practice', list:list.slice(0,50)});
+  },
+  startExam(){
+    const count=parseInt($('#examCount').value,10);
+    const minutes=parseInt($('#examMinutes').value,10);
+    let pool=this.pool();
+    if(pool.length<3){ toast('题库题目太少，无法组卷'); return; }
+    const list=shuffle(pool).slice(0,Math.min(count,pool.length));
+    this.begin({mode:'exam', list, limitMs:minutes*60000});
+  },
+  begin(st){
+    st.idx=0; st.answers={}; st.judged={}; st.startTs=Date.now();
+    this.state=st;
+    $('#quizHome').classList.add('hidden');
+    $('#quizResult').classList.add('hidden');
+    $('#quizRun').classList.remove('hidden');
+    $('#quizTimer').classList.toggle('hidden', st.mode!=='exam');
+    if(st.mode==='exam'){
+      st.endTs=Date.now()+st.limitMs;
+      st.timerId=setInterval(()=>{
+        const left=st.endTs-Date.now();
+        if(left<=0){ toast('时间到，自动交卷'); this.submitExam(); return; }
+        $('#quizTimer').textContent=fmtClock(left/1000);
+      },500);
+      $('#quizTimer').textContent=fmtClock(st.limitMs/1000);
+    }
+    this.renderQuestion();
+  },
+  // ---- 单题渲染 ----
+  renderQuestion(){
+    const st=this.state; if(!st) return;
+    const q=st.list[st.idx], n=st.list.length;
+    $('#quizProgressText').textContent=(st.idx+1)+' / '+n+(st.mode==='exam'?' · 模拟测试':'');
+    $('#quizProgressBar').style.width=((st.idx+1)/n*100)+'%';
+
+    const typeName={single:'单选题',multi:'多选题',judge:'判断题'}[q.type]||'单选题';
+    const opts=q.type==='judge'?['正确','错误']:(q.options||[]);
+    const picked=st.answers[st.idx]||[];
+    const judged=!!st.judged[st.idx];
+    const answerArr=Array.isArray(q.answer)?q.answer:[q.answer];
+
+    let html=`<span class="q-type">${typeName}${q.source?' · '+esc(q.source):''}${q.chapter?' · '+esc(q.chapter):''}</span>`;
+    html+=`<div class="q-stem">${esc(q.stem)}</div>`;
+    opts.forEach((op,i)=>{
+      let cls='';
+      if(judged){
+        if(answerArr.includes(i)) cls='correct';
+        else if(picked.includes(i)) cls='wrong';
+      }else if(picked.includes(i)) cls='sel';
+      html+=`<button class="opt ${cls}" data-i="${i}" ${judged?'disabled':''}><span class="ol">${'ABCDEFG'[i]}</span><span>${esc(op)}</span></button>`;
+    });
+    if(judged){
+      const ok=answerArr.slice().sort().join()===picked.slice().sort().join();
+      html+=`<div class="explain"><b>${ok?'✓ 回答正确':'✗ 回答错误 · 正确答案 '+'ABCDEFG'[answerArr[0]]+(answerArr.length>1?'（'+answerArr.map(a=>'ABCDEFG'[a]).join('')+'）':'')}</b>${esc(q.explain||'暂无解析')}</div>`;
+    }
+    $('#quizQuestionCard').innerHTML=html;
+
+    if(!judged){
+      document.querySelectorAll('#quizQuestionCard .opt').forEach(btn=>{
+        btn.addEventListener('click',()=>this.pick(parseInt(btn.dataset.i,10)));
+      });
+    }
+    // 底部按钮
+    $('#quizPrevBtn').disabled = st.idx===0;
+    $('#quizPrevBtn').style.opacity = st.idx===0?.4:1;
+    const next=$('#quizNextBtn');
+    if(st.mode==='practice'){
+      next.textContent = judged?(st.idx===n-1?'完成练习':'下一题'):'确认答案';
+      next.classList.toggle('confirm', !judged);
+    }else{
+      next.textContent = st.idx===n-1?'交卷':'下一题';
+      next.classList.remove('confirm');
+    }
+  },
+  pick(i){
+    const st=this.state, q=st.list[st.idx];
+    if(st.judged[st.idx]) return;
+    const cur=st.answers[st.idx]||[];
+    if(q.type==='multi'){
+      const p=cur.indexOf(i);
+      if(p>=0) cur.splice(p,1); else cur.push(i);
+      st.answers[st.idx]=cur;
+    }else{
+      st.answers[st.idx]=[i];
+    }
+    this.renderQuestion();
+    // 单选/判断：选中即自动判定
+    if(q.type!=='multi') this.confirm();
+  },
+  confirm(){
+    const st=this.state, q=st.list[st.idx];
+    const picked=st.answers[st.idx]||[];
+    if(!picked.length){ toast('请先选择答案'); return; }
+    st.judged[st.idx]=true;
+    const answerArr=(Array.isArray(q.answer)?q.answer:[q.answer]).slice().sort();
+    const ok=answerArr.join()===picked.slice().sort().join();
+    DB.data.answered++;
+    if(ok) DB.data.correct++;
+    else{
+      DB.data.wrongBook[q.id]={count:(DB.data.wrongBook[q.id]&&DB.data.wrongBook[q.id].count||0)+1,lastWrong:todayStr()};
+    }
+    // 错题重做模式：答对自动移出错题本
+    if(ok && st.mode==='wrong') delete DB.data.wrongBook[q.id];
+    DB.save();
+    this.renderQuestion();
+    if(ok) toast('回答正确！');
+    else toast('答错了，已加入错题本');
+  },
+  next(){
+    const st=this.state;
+    if(st.mode==='practice'){
+      if(!st.judged[st.idx]){ this.confirm(); return; }
+      if(st.idx===st.list.length-1){ this.showPracticeResult(); return; }
+      st.idx++;
+    }else{
+      if(st.idx===st.list.length-1){ this.submitExam(); return; }
+      st.idx++;
+    }
+    this.renderQuestion();
+    window.scrollTo(0,0);
+  },
+  prev(){
+    const st=this.state;
+    if(st.idx>0){ st.idx--; this.renderQuestion(); }
+  },
+  // ---- 练习结果 ----
+  showPracticeResult(){
+    const st=this.state;
+    const done=st.list.filter((q,i)=>st.judged[i]).length;
+    const okCount=st.list.filter((q,i)=>{
+      if(!st.judged[i]) return false;
+      const a=(Array.isArray(q.answer)?q.answer:[q.answer]).slice().sort().join();
+      return a===(st.answers[i]||[]).slice().sort().join();
+    }).length;
+    this.clearTimer();
+    $('#quizRun').classList.add('hidden');
+    $('#quizResult').classList.remove('hidden');
+    $('#scoreCard').innerHTML=`
+      <div class="score-num">${okCount}<small style="font-size:20px;color:var(--muted)">/${done}</small></div>
+      <p>练习完成 · 正确率 ${done?Math.round(okCount/done*100):0}%</p>`;
+    $('#reviewList').innerHTML=st.list.map((q,i)=>this.reviewItem(q,i,st.judged[i],st.answers[i])).join('');
+  },
+  // ---- 考试交卷 ----
+  submitExam(){
+    const st=this.state; if(!st||st.mode!=='exam') return;
+    this.clearTimer();
+    let okCount=0;
+    st.list.forEach((q,i)=>{
+      const picked=st.answers[i]||[];
+      const a=(Array.isArray(q.answer)?q.answer:[q.answer]).slice().sort().join();
+      const ok=!!picked.length && a===picked.slice().sort().join();
+      if(ok) okCount++;
+      else DB.data.wrongBook[q.id]={count:(DB.data.wrongBook[q.id]&&DB.data.wrongBook[q.id].count||0)+1,lastWrong:todayStr()};
+      if(picked.length){ DB.data.answered++; if(ok) DB.data.correct++; }
+    });
+    const dur=Math.round((Date.now()-st.startTs)/1000);
+    const score=Math.round(okCount/st.list.length*100);
+    DB.data.exams.push({id:uid(), date:todayStr(), title:'模拟测试', total:st.list.length, correct:okCount, durationSec:dur, subject:this.filterSubject});
+    DB.save();
+    st.mode='examDone';
+    $('#quizRun').classList.add('hidden');
+    $('#quizResult').classList.remove('hidden');
+    $('#scoreCard').innerHTML=`
+      <div class="score-num">${score}<small style="font-size:22px;color:var(--muted)">分</small></div>
+      <p>答对 ${okCount} / ${st.list.length} 题 · 用时 ${fmtClock(dur)}<br>错题已自动加入错题本</p>`;
+    $('#reviewList').innerHTML=st.list.map((q,i)=>{
+      const picked=st.answers[i]||[];
+      const a=(Array.isArray(q.answer)?q.answer:[q.answer]).slice().sort().join();
+      const ok=!!picked.length && a===picked.slice().sort().join();
+      return this.reviewItem(q,i,ok,picked,true);
+    }).join('');
+  },
+  reviewItem(q,i,judgedOk,picked,showPicked){
+    const answerArr=(Array.isArray(q.answer)?q.answer:[q.answer]);
+    const opts=q.type==='judge'?['正确','错误']:(q.options||[]);
+    const your= picked&&picked.length ? picked.map(x=>opts[x]!=null?('ABCDEFG'[x]+' '+opts[x]):'?').join('；') : '未作答';
+    const right=answerArr.map(x=>opts[x]!=null?('ABCDEFG'[x]+' '+opts[x]):'?').join('；');
+    return `<div class="review-item ${judgedOk?'ok':'bad'}">
+      <div class="rv-q"><span class="rv-tag">${judgedOk?'✓':'✗'}</span><span>${(i+1)}. ${esc(q.stem)}</span></div>
+      ${showPicked!==false?`<div class="rv-a">你的答案：${esc(your)}　正确答案：${esc(right)}</div>`:''}
+      ${q.explain?`<div class="rv-e">${esc(q.explain)}</div>`:''}
+    </div>`;
+  },
+  exit(){
+    if(this.state && this.state.mode==='exam' && !this.state.examDone){
+      if(!confirm('模拟测试进行中，确认放弃本次测试？')) return;
+    }
+    this.clearTimer(); this.state=null;
+    $('#quizRun').classList.add('hidden');
+    $('#quizResult').classList.add('hidden');
+    $('#quizHome').classList.remove('hidden');
+    this.renderHome();
+  },
+  clearTimer(){
+    if(this.state&&this.state.timerId){ clearInterval(this.state.timerId); this.state.timerId=null; }
+  }
+};
+// 刷题事件绑定
+$('#btnSeq').addEventListener('click',()=>Quiz.startPractice(false,false));
+$('#btnRand').addEventListener('click',()=>Quiz.startPractice(true,false));
+$('#btnWrong').addEventListener('click',()=>Quiz.startPractice(true,true));
+$('#btnExamStart').addEventListener('click',()=>Quiz.startExam());
+$('#quizPrevBtn').addEventListener('click',()=>Quiz.prev());
+$('#quizNextBtn').addEventListener('click',()=>Quiz.next());
+$('#quizExitBtn').addEventListener('click',()=>Quiz.exit());
+$('#quizDoneBtn').addEventListener('click',()=>Quiz.exit());
+
+// ================= 8. 院校库模块 =================
+/* 数据条目：[名称, 省份, 层次]  A=985  B=211(非985)  C=双一流(非211)
+   仅供筛选参考；招生简章/专业目录/分数线以研招网及院校官方发布为准 */
+const COLLEGES_RAW=[
+['清华大学','北京','A'],['北京大学','北京','A'],['中国人民大学','北京','A'],['北京航空航天大学','北京','A'],['北京理工大学','北京','A'],['中国农业大学','北京','A'],['北京师范大学','北京','A'],['中央民族大学','北京','A'],
+['北京交通大学','北京','B'],['北京工业大学','北京','B'],['北京科技大学','北京','B'],['北京化工大学','北京','B'],['北京邮电大学','北京','B'],['北京林业大学','北京','B'],['北京中医药大学','北京','B'],['北京外国语大学','北京','B'],['中国传媒大学','北京','B'],['中央财经大学','北京','B'],['对外经济贸易大学','北京','B'],['北京体育大学','北京','B'],['中央音乐学院','北京','B'],['中国政法大学','北京','B'],['华北电力大学','北京','B'],['中国矿业大学(北京)','北京','B'],['中国石油大学(北京)','北京','B'],['中国地质大学(北京)','北京','B'],
+['北京协和医学院','北京','C'],['首都师范大学','北京','C'],['外交学院','北京','C'],['中国人民公安大学','北京','C'],['中国科学院大学','北京','C'],['中国音乐学院','北京','C'],['中央美术学院','北京','C'],['中央戏剧学院','北京','C'],
+['南开大学','天津','A'],['天津大学','天津','A'],['天津医科大学','天津','B'],['天津工业大学','天津','C'],['天津中医药大学','天津','C'],
+['河北工业大学','河北','B'],
+['太原理工大学','山西','B'],['山西大学','山西','C'],
+['内蒙古大学','内蒙古','B'],
+['大连理工大学','辽宁','A'],['东北大学','辽宁','A'],['辽宁大学','辽宁','B'],['大连海事大学','辽宁','B'],
+['吉林大学','吉林','A'],['东北师范大学','吉林','B'],['延边大学','吉林','B'],
+['哈尔滨工业大学','黑龙江','A'],['哈尔滨工程大学','黑龙江','B'],['东北农业大学','黑龙江','B'],['东北林业大学','黑龙江','B'],
+['复旦大学','上海','A'],['同济大学','上海','A'],['上海交通大学','上海','A'],['华东师范大学','上海','A'],['华东理工大学','上海','B'],['上海外国语大学','上海','B'],['上海财经大学','上海','B'],['上海大学','上海','B'],['海军军医大学','上海','B'],
+['上海科技大学','上海','C'],['上海海洋大学','上海','C'],['上海中医药大学','上海','C'],['上海体育大学','上海','C'],['上海音乐学院','上海','C'],
+['南京大学','江苏','A'],['东南大学','江苏','A'],['苏州大学','江苏','B'],['南京航空航天大学','江苏','B'],['南京理工大学','江苏','B'],['中国矿业大学','江苏','B'],['河海大学','江苏','B'],['江南大学','江苏','B'],['南京农业大学','江苏','B'],['南京师范大学','江苏','B'],['中国药科大学','江苏','B'],
+['南京邮电大学','江苏','C'],['南京林业大学','江苏','C'],['南京信息工程大学','江苏','C'],['南京医科大学','江苏','C'],
+['浙江大学','浙江','A'],['中国美术学院','浙江','C'],['宁波大学','浙江','C'],
+['中国科学技术大学','安徽','A'],['合肥工业大学','安徽','B'],['安徽大学','安徽','B'],
+['厦门大学','福建','A'],['福州大学','福建','B'],
+['南昌大学','江西','B'],
+['山东大学','山东','A'],['中国海洋大学','山东','A'],
+['郑州大学','河南','B'],['河南大学','河南','C'],
+['武汉大学','湖北','A'],['华中科技大学','湖北','A'],['中国地质大学(武汉)','湖北','B'],['武汉理工大学','湖北','B'],['华中农业大学','湖北','B'],['华中师范大学','湖北','B'],['中南财经政法大学','湖北','B'],
+['湖南大学','湖南','A'],['中南大学','湖南','A'],['国防科技大学','湖南','A'],['湖南师范大学','湖南','B'],['湘潭大学','湖南','C'],
+['中山大学','广东','A'],['华南理工大学','广东','A'],['暨南大学','广东','B'],['华南师范大学','广东','B'],
+['广州中医药大学','广东','C'],['华南农业大学','广东','C'],['广州医科大学','广东','C'],['南方科技大学','广东','C'],
+['广西大学','广西','B'],['海南大学','海南','B'],
+['重庆大学','重庆','A'],['西南大学','重庆','B'],
+['四川大学','四川','A'],['电子科技大学','四川','A'],['西南交通大学','四川','B'],['西南财经大学','四川','B'],['四川农业大学','四川','B'],
+['成都理工大学','四川','C'],['西南石油大学','四川','C'],['成都中医药大学','四川','C'],
+['贵州大学','贵州','B'],['云南大学','云南','B'],['西藏大学','西藏','B'],
+['西安交通大学','陕西','A'],['西北工业大学','陕西','A'],['西北农林科技大学','陕西','A'],['西安电子科技大学','陕西','B'],['西北大学','陕西','B'],['长安大学','陕西','B'],['陕西师范大学','陕西','B'],['空军军医大学','陕西','B'],
+['兰州大学','甘肃','A'],['青海大学','青海','B'],['宁夏大学','宁夏','B'],['新疆大学','新疆','B'],['石河子大学','新疆','B'],
+['长春理工大学','吉林','D']
+];
+const TAG_MAP={A:['985','211','双一流'],B:['211','双一流'],C:['双一流'],D:[]};
+const COLLEGES=COLLEGES_RAW.map(r=>({name:r[0],prov:r[1],tags:TAG_MAP[r[2]]}));
+/* 光电强校：第四轮学科评估「光学工程」A 类及以上 + 光电特色强校长春理工大学（评估排名仅供参考） */
+const OPTO_STRONG=new Set(['浙江大学','华中科技大学','南开大学','天津大学','国防科技大学','北京理工大学','长春理工大学','哈尔滨工业大学','电子科技大学']);
+const College={
+  q:'', tag:'全部', prov:'全部', cur:null,
+  notes(){ return DB.data.collegeNotes; },
+  provinces(){ const s=[]; COLLEGES.forEach(c=>{ if(!s.includes(c.prov)) s.push(c.prov); }); return s; },
+  filtered(){
+    const q=this.q.trim().toLowerCase();
+    return COLLEGES.filter(c=>{
+      if(q && c.name.toLowerCase().indexOf(q)<0) return false;
+      if(this.tag==='光电强校'){ if(!OPTO_STRONG.has(c.name)) return false; }
+      else if(this.tag!=='全部' && c.tags.indexOf(this.tag)<0) return false;
+      if(this.prov!=='全部' && c.prov!==this.prov) return false;
+      return true;
+    });
+  },
+  render(){
+    $('#collegeCount').textContent='共收录 '+COLLEGES.length+' 所高校 · 含 '+OPTO_STRONG.size+' 所光学工程强校';
+    const tags=['全部','985','211','双一流','光电强校'];
+    $('#collegeTags').innerHTML=tags.map(t=>`<button class="chip ${t===this.tag?'sel':''}" data-t="${t}">${t==='全部'?'全部层次':t}</button>`).join('');
+    document.querySelectorAll('#collegeTags .chip').forEach(b=>b.addEventListener('click',()=>{ this.tag=b.dataset.t; this.render(); }));
+    const provs=['全部'].concat(this.provinces());
+    $('#collegeProvs').innerHTML=provs.map(p=>`<button class="chip ${p===this.prov?'sel':''}" data-p="${esc(p)}">${esc(p)}</button>`).join('');
+    document.querySelectorAll('#collegeProvs .chip').forEach(b=>b.addEventListener('click',()=>{ this.prov=b.dataset.p; this.render(); }));
+    const favs=COLLEGES.filter(c=>{ const n=this.notes()[c.name]; return n&&n.fav; });
+    $('#favCard').classList.toggle('hidden',!favs.length);
+    $('#favList').innerHTML=favs.map(c=>this.itemHtml(c)).join('');
+    this.bindItems('#favList');
+    const list=this.filtered();
+    $('#collegeFilteredCount').textContent='筛选出 '+list.length+' 所';
+    $('#collegeList').innerHTML=list.length?list.map(c=>this.itemHtml(c)).join(''):'<div class="empty">没有匹配的院校，试试换个筛选条件</div>';
+    this.bindItems('#collegeList');
+    $('#collegeSearch').value=this.q;
+  },
+  itemHtml(c){
+    const n=this.notes()[c.name]||{};
+    const major=n.major?' · '+esc(n.major):'';
+    const tagHtml=c.tags.map(t=>`<span class="tag tag-${t==='985'?'985':t==='211'?'211':'dfyl'}">${t}</span>`).join('')+(OPTO_STRONG.has(c.name)?'<span class="tag tag-opto">光电强校</span>':'');
+    return `<div class="college-item" data-name="${esc(c.name)}">
+      <button class="fav-btn ${n.fav?'on':''}" data-fav="${esc(c.name)}">${n.fav?'★':'☆'}</button>
+      <div class="cname">${esc(c.name)}<small>${esc(c.prov)}${major}</small></div>
+      <div>${tagHtml}</div>
+    </div>`;
+  },
+  bindItems(sel){
+    document.querySelectorAll(sel+' .college-item').forEach(row=>{
+      const name=row.dataset.name;
+      row.querySelector('.cname').addEventListener('click',()=>this.openDetail(name));
+      row.querySelector('.fav-btn').addEventListener('click',e=>{ e.stopPropagation(); this.toggleFav(name); });
+    });
+  },
+  toggleFav(name){
+    const n=this.notes();
+    if(!n[name]) n[name]={fav:false,major:'',note:''};
+    n[name].fav=!n[name].fav;
+    DB.save();
+    toast(n[name].fav?'已设为目标院校':'已取消目标院校');
+    this.render();
+    if(this.cur===name && !$('#collegeDetail').classList.contains('hidden')) this.openDetail(name);
+  },
+  openDetail(name){
+    this.cur=name;
+    const c=COLLEGES.find(x=>x.name===name), n=this.notes()[name]||{};
+    $('#cdName').textContent=name;
+    $('#cdTags').innerHTML=c.tags.map(t=>`<span class="tag">${t}</span>`).join('')+(OPTO_STRONG.has(name)?'<span class="tag">光电强校</span>':'');
+    $('#cdProv').textContent='所在地：'+c.prov;
+    $('#cdMajor').value=n.major||'';
+    $('#cdNote').value=n.note||'';
+    const fb=$('#collegeFavBtn');
+    fb.textContent=n.fav?'★ 已收藏':'☆ 收藏';
+    fb.style.background=n.fav?'#FFF6E8':'var(--tint)';
+    $('#cdLinkSearch').href='https://www.bing.com/search?q='+encodeURIComponent(name+' 研究生招生 分数线 专业目录');
+    $('#collegeHome').classList.add('hidden');
+    $('#collegeDetail').classList.remove('hidden');
+    window.scrollTo(0,0);
+  },
+  back(){ this.cur=null; $('#collegeDetail').classList.add('hidden'); $('#collegeHome').classList.remove('hidden'); this.render(); }
+};
+$('#collegeSearch').addEventListener('input',e=>{ College.q=e.target.value; College.render(); });
+$('#collegeBackBtn').addEventListener('click',()=>College.back());
+$('#collegeFavBtn').addEventListener('click',()=>{ if(College.cur) College.toggleFav(College.cur); });
+$('#cdSaveBtn').addEventListener('click',()=>{
+  const name=College.cur; if(!name) return;
+  const n=College.notes();
+  if(!n[name]) n[name]={fav:false,major:'',note:''};
+  n[name].major=$('#cdMajor').value.trim();
+  n[name].note=$('#cdNote').value.trim();
+  DB.save(); toast('报考笔记已保存');
+  College.render();
+});
+
+// ================= 9. 我的 / 数据管理 =================
+function renderMine(){
+  const d=DB.data;
+  $('#msDuration').textContent=fmtMin(DB.totalDuration());
+  $('#msAnswered').textContent=d.answered+' 题';
+  $('#msExams').textContent=d.exams.length+' 次'+(d.exams.length?(' · 平均 '+Math.round(d.exams.reduce((t,e)=>t+e.correct/e.total,0)/d.exams.length*100)+' 分'):'');
+  $('#msCheckins').textContent=Object.keys(d.checkins).length+' 天';
+  $('#msWrong').textContent=Object.keys(d.wrongBook).length+' 题';
+  $('#msFavs').textContent=Object.values(d.collegeNotes||{}).filter(n=>n.fav).length+' 所';
+  $('#bankCountText').textContent='共 '+d.questions.length+' 题';
+}
+
+// ---- 题库导入：标准化 ----
+function normalizeImport(raw){
+  let arr=null, meta={};
+  if(Array.isArray(raw)) arr=raw;
+  else if(raw && Array.isArray(raw.questions)){ arr=raw.questions; meta=raw.meta||{}; }
+  if(!arr) return {ok:false,msg:'JSON 结构不正确：需要 {meta, questions} 或题目数组'};
+  const added=[], skipped=[];
+  const exist={};
+  DB.data.questions.forEach(q=>exist[q.id]=true);
+  arr.forEach((q,i)=>{
+    if(!q || !q.stem || !Array.isArray(q.options) || q.options.length<2){ skipped.push(i+1); return; }
+    let type=q.type||'single';
+    if(!['single','multi','judge'].includes(type)) type='single';
+    let answer=q.answer;
+    if(type==='multi'){ if(!Array.isArray(answer)||!answer.length){ skipped.push(i+1); return; } }
+    else{ if(typeof answer!=='number'||answer<0||answer>=q.options.length){ skipped.push(i+1); return; } }
+    const id=(q.id&&String(q.id))||((meta.subject||'q')+meta.year+'-'+(i+1)+'-'+uid().slice(-4));
+    const item={
+      id, type,
+      subject:q.subject||meta.subject||'未分类',
+      chapter:q.chapter||meta.chapter||'',
+      year:q.year||meta.year||null,
+      stem:String(q.stem), options:q.options.map(o=>String(o)),
+      answer, explain:q.explain?String(q.explain):'',
+      source:q.source||meta.source||(meta.year?meta.year+'真题':'')
+    };
+    if(exist[item.id]){ // 同 id 覆盖更新
+      const idx=DB.data.questions.findIndex(x=>x.id===item.id);
+      DB.data.questions[idx]=item;
+    }else{
+      DB.data.questions.push(item); added.push(item.id);
+    }
+  });
+  DB.save();
+  return {ok:true, added:added.length, updated:arr.length-added.length-skipped.length, skipped};
+}
+function importFromText(text){
+  if(!text.trim()){ toast('内容为空'); return; }
+  let raw;
+  try{ raw=JSON.parse(text); }
+  catch(e){ toast('JSON 解析失败：'+e.message); return; }
+  const r=normalizeImport(raw);
+  if(!r.ok){ toast(r.msg); return; }
+  toast('导入完成：新增 '+r.added+' 题'+(r.updated?'，更新 '+r.updated+' 题':'')+(r.skipped.length?'，跳过 '+r.skipped.length+' 题（格式有误）':''));
+  $('#importBox').value='';
+  renderMine();
+}
+$('#btnImportPaste').addEventListener('click',()=>importFromText($('#importBox').value));
+$('#btnImportFile').addEventListener('click',()=>{
+  const inp=document.createElement('input');
+  inp.type='file'; inp.accept='.json,application/json';
+  inp.addEventListener('change',()=>{
+    const f=inp.files[0]; if(!f) return;
+    const rd=new FileReader();
+    rd.addEventListener('load',()=>{
+      try{ importFromText(String(rd.result)); }
+      catch(e){ toast('读取文件失败'); }
+    });
+    rd.readAsText(f,'utf-8');
+  });
+  inp.click();
+});
+
+// ---- 备份 / 恢复 / 清空 ----
+$('#btnExport').addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify(DB.data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='kaoyan-backup-'+todayStr()+'.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  toast('备份已导出');
+});
+$('#btnRestore').addEventListener('click',()=>{
+  const inp=$('#restoreFile');
+  inp.onchange=()=>{
+    const f=inp.files[0]; if(!f) return;
+    const rd=new FileReader();
+    rd.addEventListener('load',()=>{
+      let obj;
+      try{ obj=JSON.parse(String(rd.result)); }
+      catch(e){ toast('文件解析失败'); return; }
+      if(!obj||!Array.isArray(obj.questions)||!obj.settings){ toast('不是有效的备份文件'); return; }
+      if(!confirm('恢复备份将覆盖当前全部数据，确定继续？')) return;
+      DB.data=obj; DB.migrate(); DB.save();
+      toast('数据恢复成功'); renderMine(); renderHome();
+    });
+    rd.readAsText(f,'utf-8');
+    inp.value='';
+  };
+  inp.click();
+});
+$('#btnClear').addEventListener('click',()=>{
+  if(!confirm('确定清空全部数据吗？此操作不可恢复！')) return;
+  if(!confirm('再次确认：真的要清空吗？建议先导出备份。')) return;
+  localStorage.removeItem(DB.key);
+  DB.load(); renderMine(); renderHome();
+  toast('已恢复初始状态');
+});
+
+// ================= 9. 弹窗 / 导航 / 初始化 =================
+$('#editExamBtn').addEventListener('click',()=>{
+  $('#examDateInput').value=DB.data.settings.examDate;
+  $('#modalMask').classList.remove('hidden');
+});
+$('#modalCancelBtn').addEventListener('click',()=>$('#modalMask').classList.add('hidden'));
+$('#modalOkBtn').addEventListener('click',()=>{
+  const v=$('#examDateInput').value;
+  if(!v){ toast('请选择日期'); return; }
+  DB.data.settings.examDate=v; DB.save();
+  $('#modalMask').classList.add('hidden');
+  renderHome(); toast('考试日期已更新');
+});
+$('#modalMask').addEventListener('click',e=>{ if(e.target.id==='modalMask') $('#modalMask').classList.add('hidden'); });
+
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchPage(t.dataset.page)));
+
+// Service Worker（仅在 http/https 下注册，file:// 打开时跳过）
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+// 初始化（支持 #page-plan 等 hash 直达）
+DB.load();
+const hashPage = location.hash.replace('#','');
+if(['page-home','page-plan','page-quiz','page-college','page-mine'].includes(hashPage)) switchPage(hashPage);
+else renderHome();
+Pomo.subject=DB.data.settings.pomodoroSubject;
+$('#pomoSilent').checked=!!DB.data.settings.silentMode; // 图书馆模式开关状态回显
+</script>
+</body>
+</html>
