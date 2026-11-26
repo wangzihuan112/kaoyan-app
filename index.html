@@ -540,7 +540,7 @@ textarea.note-input{height:84px;resize:vertical}
           <button class="mine-btn warn" id="btnClear">清空全部数据<small>不可恢复，建议先导出备份</small></button>
         </div>
       </div>
-      <p style="text-align:center;font-size:11px;color:#B7BFCE;margin-top:12px">考研助手 v2.7 · 作战方案版</p>
+      <p style="text-align:center;font-size:11px;color:#B7BFCE;margin-top:12px">考研助手 v2.8 · 作战方案版</p>
     </section>
   </main>
 
@@ -1479,7 +1479,12 @@ const Cloud={
     if(!res.ok) throw new Error('HTTP '+res.status+(res.status===401?'（Token 无效或过期）':res.status===404?'（云端库 ID 不存在）':''));
     return res.json();
   },
-  payload(){ return JSON.stringify(DB.data); },
+  payload(){
+    // Token 不写入云端备份：安全 + 防止启动自动恢复时旧 Token 回灌覆盖本地新 Token
+    const o=JSON.parse(JSON.stringify(DB.data));
+    if(o.settings) delete o.settings.gtoken;
+    return JSON.stringify(o);
+  },
   validObj(obj){ return !!(obj&&Array.isArray(obj.questions)&&obj.settings); },
   async create(){
     this.syncInput();
@@ -1511,8 +1516,8 @@ const Cloud={
       this.busy=true;
       const localTk=DB.data.settings.gtoken, localGd=DB.data.settings.gid;
       DB.data=obj; DB.migrate();
-      // 云端备份若缺凭证（旧版本备份/异地导出），保留本地 Token 与云端库 ID
-      if(!DB.data.settings.gtoken && localTk) DB.data.settings.gtoken=localTk;
+      // Token 永远以本地为准（云端旧 Token 不回灌）；云端库 ID 本地没有时才取云端
+      if(localTk) DB.data.settings.gtoken=localTk;
       if(!DB.data.settings.gid && localGd) DB.data.settings.gid=localGd;
       DB.save();
       this.busy=false;
