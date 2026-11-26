@@ -49,6 +49,11 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-top:14px}
 .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .card-head span{font-size:13px;color:var(--muted)}
+details.fold>summary{list-style:none;cursor:pointer;user-select:none}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary::after{content:'▾';color:#B7BFCE;font-size:13px;flex-shrink:0;transition:transform .2s}
+details.fold:not([open])>summary::after{transform:rotate(-90deg)}
+details.fold:not([open])>summary{margin-bottom:0}
 
 /* ================= 首页看板 ================= */
 .hero{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-3) 100%);color:var(--white);margin-top:10px;position:relative;overflow:hidden}
@@ -337,75 +342,10 @@ textarea.note-input{height:84px;resize:vertical}
 
     <!-- ================= 学习计划 ================= -->
     <section class="page" id="page-plan">
-      <header class="topbar"><div><h1>学习计划</h1><p class="sub">制定计划 · 打卡 · 专注</p></div></header>
+      <header class="topbar"><div><h1>学习计划</h1><p class="sub">专注计时 · 计划 · 打卡</p></div></header>
       <div class="date-strip" id="dateStrip"></div>
       <div class="card">
-        <div class="card-head"><h2 id="planDateTitle">今日计划</h2><button class="mini-btn" id="addPlanBtn">＋ 新任务</button></div>
-        <div id="planList"></div>
-        <div class="plan-form hidden" id="planForm">
-          <select id="planSubject"></select>
-          <input type="text" id="planTaskInput" placeholder="输入任务内容，如：背 50 个单词" maxlength="60">
-          <div style="display:flex;gap:10px">
-            <button class="mini-btn ghost" id="planCancelBtn" style="flex:1">取消</button>
-            <button class="mini-btn" id="planSaveBtn" style="flex:2;background:var(--primary);color:#fff">保存任务</button>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>每日打卡</h2><span id="streakText">连续 0 天</span></div>
-        <button class="checkin-btn" id="checkinBtn">点击打卡</button>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>⏰ 作息时间表</h2><span class="sched-tabs"><button class="mini-btn" id="tabWeekday">工作日</button><button class="mini-btn ghost" id="tabWeekend">周末</button></span></div>
-        <div id="schedList"></div>
-        <details class="fmt" id="schedDetails">
-          <summary>导入 / 修改作息表（点开粘贴文本）</summary>
-          <textarea class="note-input" id="schedBox" placeholder="每行一条，两种格式都支持：
-07:00-08:00 背单词
-07:00 背单词
-
-也可标注科目（会同步到计划任务）：
-08:00-10:00 数学强化【数学二】"></textarea>
-          <div style="display:flex;gap:10px;margin-top:10px">
-            <button class="primary-btn" id="schedImport" style="flex:1">导入作息表</button>
-            <button class="mine-btn" id="schedToPlan" style="flex:1">按作息生成今日计划</button>
-          </div>
-        </details>
-      </div>
-      <div class="card">
-        <details class="fmt" id="chapDetails">
-          <summary>🗺️ 839 章节取舍地图（点开查看）</summary>
-          <div id="chapMap"></div>
-          <p style="font-size:11px;color:#B7BFCE;margin-top:8px">推荐复习顺序：光学 → 力学 → 电磁学 → 热学。拿到真题后逐项校准——真题是这张地图唯一的校准源。</p>
-        </details>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>📋 复习提纲</h2><span id="outlineSummary"></span></div>
-        <div id="outlineBody"></div>
-        <details class="fmt">
-          <summary>导入提纲（点开粘贴文本）</summary>
-          <textarea class="note-input" id="outlineBox" placeholder="【科目名】
-# 第一章 章名
-- 知识点1
-- 知识点2"></textarea>
-          <div style="display:flex;gap:10px;margin-top:10px">
-            <button class="primary-btn" id="outlineImport" style="flex:1">导入提纲</button>
-          </div>
-          <p style="font-size:11px;color:#B7BFCE;margin-top:8px">【】行为科目；# 开头为章节分组；- 或普通行为知识点（勾选单位）。同一科目重复导入覆盖旧提纲与勾选进度。提纲自动纳入备份与云同步。</p>
-        </details>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>🎯 里程碑验收</h2><span id="mileNext"></span></div>
-        <div id="mileList"></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>🚫 三条红线</h2></div>
-        <div class="redline-item"><b>红线一</b>数学不能用「听完了」自我欺骗，唯一判定标准：合上书，能否独立做出来。</div>
-        <div class="redline-item"><b>红线二</b>不追多套资料，一套名师体系用到底——买三套等于一套没买。</div>
-        <div class="redline-item"><b>红线三</b>2027 年 6 月之前不碰政治，不做无效回合交换。</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>番茄钟</h2><span id="pomoStateText">专注 25 分钟</span></div>
+        <div class="card-head"><h2>🍅 番茄钟</h2><span id="pomoStateText">专注 25 分钟</span></div>
         <div class="pomo-wrap">
           <div class="chip-row" id="pomoSubjectChips"></div>
           <div class="pomo-set"><span class="pomo-set-label">专注</span><div class="chip-row" id="pomoDurChips" style="margin-bottom:0"></div></div>
@@ -426,6 +366,81 @@ textarea.note-input{height:84px;resize:vertical}
             <label class="switch"><input type="checkbox" id="pomoSilent"><span class="slider"></span></label>
           </div>
         </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2 id="planDateTitle">今日计划</h2><button class="mini-btn" id="addPlanBtn">＋ 新任务</button></div>
+        <div id="planList"></div>
+        <div class="plan-form hidden" id="planForm">
+          <select id="planSubject"></select>
+          <input type="text" id="planTaskInput" placeholder="输入任务内容，如：背 50 个单词" maxlength="60">
+          <div style="display:flex;gap:10px">
+            <button class="mini-btn ghost" id="planCancelBtn" style="flex:1">取消</button>
+            <button class="mini-btn" id="planSaveBtn" style="flex:2;background:var(--primary);color:#fff">保存任务</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>每日打卡</h2><span id="streakText">连续 0 天</span></div>
+        <button class="checkin-btn" id="checkinBtn">点击打卡</button>
+      </div>
+      <div class="card">
+        <details class="fold" id="fold-sched" open>
+          <summary class="card-head"><h2>⏰ 作息时间表</h2><span class="sched-tabs"><button class="mini-btn" id="tabWeekday">工作日</button><button class="mini-btn ghost" id="tabWeekend">周末</button></span></summary>
+          <div id="schedList"></div>
+          <details class="fmt" id="schedDetails">
+            <summary>导入 / 修改作息表（点开粘贴文本）</summary>
+            <textarea class="note-input" id="schedBox" placeholder="每行一条，两种格式都支持：
+07:00-08:00 背单词
+07:00 背单词
+
+也可标注科目（会同步到计划任务）：
+08:00-10:00 数学强化【数学二】"></textarea>
+            <div style="display:flex;gap:10px;margin-top:10px">
+              <button class="primary-btn" id="schedImport" style="flex:1">导入作息表</button>
+              <button class="mine-btn" id="schedToPlan" style="flex:1">按作息生成今日计划</button>
+            </div>
+          </details>
+        </details>
+      </div>
+      <div class="card">
+        <details class="fold" id="fold-chap">
+          <summary class="card-head"><h2>🗺️ 839 章节取舍地图</h2><span>点开查看</span></summary>
+          <div id="chapMap"></div>
+          <p style="font-size:11px;color:#B7BFCE;margin-top:8px">推荐复习顺序：光学 → 力学 → 电磁学 → 热学。拿到真题后逐项校准——真题是这张地图唯一的校准源。</p>
+        </details>
+      </div>
+      <div class="card">
+        <details class="fold" id="fold-outline">
+          <summary class="card-head"><h2>📋 复习提纲</h2><span id="outlineSummary"></span></summary>
+          <div id="outlineBody"></div>
+          <details class="fmt">
+            <summary>导入提纲（点开粘贴文本）</summary>
+            <textarea class="note-input" id="outlineBox" placeholder="【科目名】
+# 第一章 章名
+- 知识点1
+- 知识点2"></textarea>
+            <div style="display:flex;gap:10px;margin-top:10px">
+              <button class="primary-btn" id="outlineImport" style="flex:2">导入提纲</button>
+              <button class="mine-btn" id="outlineFileBtn" style="flex:1">📂 Word 导入</button>
+            </div>
+            <input type="file" id="outlineFile" accept=".docx,.txt,.md" class="hidden">
+            <p style="font-size:11px;color:#B7BFCE;margin-top:8px">支持粘贴文本或导入 Word(.docx)/txt/md 文件。格式：【】行为科目；Word 里用「标题样式」做章节、正文/项目符号做知识点；txt/md 用 # 做章节、- 做知识点。文中没写【科目名】时用文件名（可改）。同一科目重复导入覆盖旧提纲与勾选进度。</p>
+          </details>
+        </details>
+      </div>
+      <div class="card">
+        <details class="fold" id="fold-mile">
+          <summary class="card-head"><h2>🎯 里程碑验收</h2><span id="mileNext"></span></summary>
+          <div id="mileList"></div>
+        </details>
+      </div>
+      <div class="card">
+        <details class="fold" id="fold-red">
+          <summary class="card-head"><h2>🚫 三条红线</h2></summary>
+          <div class="redline-item"><b>红线一</b>数学不能用「听完了」自我欺骗，唯一判定标准：合上书，能否独立做出来。</div>
+          <div class="redline-item"><b>红线二</b>不追多套资料，一套名师体系用到底——买三套等于一套没买。</div>
+          <div class="redline-item"><b>红线三</b>2027 年 6 月之前不碰政治，不做无效回合交换。</div>
+        </details>
       </div>
       <div class="card">
         <div class="card-head"><h2>本周时长</h2><span id="weekTotal"></span></div>
@@ -540,7 +555,7 @@ textarea.note-input{height:84px;resize:vertical}
           <button class="mine-btn warn" id="btnClear">清空全部数据<small>不可恢复，建议先导出备份</small></button>
         </div>
       </div>
-      <p style="text-align:center;font-size:11px;color:#B7BFCE;margin-top:12px">考研助手 v2.8 · 作战方案版</p>
+      <p style="text-align:center;font-size:11px;color:#B7BFCE;margin-top:12px">考研助手 v3.0 · 作战方案版</p>
     </section>
   </main>
 
@@ -574,6 +589,7 @@ textarea.note-input{height:84px;resize:vertical}
 </div>
 <div id="toast"></div>
 
+<script src="./mammoth.browser.min.js" defer></script>
 <script>
 'use strict';
 /* ================================================================
@@ -1102,8 +1118,30 @@ $('#schedToPlan').addEventListener('click',()=>{
   DB.save(); Plan.render();
   toast('已生成 '+fresh.length+' 条任务'+(skipped>0?'，已跳过 '+skipped+' 条重复':''));
 });
-$('#tabWeekday').addEventListener('click',()=>Sched.setVariant('weekday'));
-$('#tabWeekend').addEventListener('click',()=>Sched.setVariant('weekend'));
+// 折叠卡在 summary 内，点击切换按钮时阻止冒泡，避免误折叠
+$('#tabWeekday').addEventListener('click',e=>{ e.stopPropagation(); Sched.setVariant('weekday'); });
+$('#tabWeekend').addEventListener('click',e=>{ e.stopPropagation(); Sched.setVariant('weekend'); });
+
+// ---- 折叠卡状态记忆 ----
+const FOLD_KEYS=['sched','chap','outline','mile','red'];
+function applyFolds(){
+  const f=DB.data.settings.folds||{};
+  FOLD_KEYS.forEach(k=>{
+    const el=document.getElementById('fold-'+k);
+    if(el && f[k]!==undefined) el.open=!!f[k];
+  });
+}
+function bindFolds(){
+  FOLD_KEYS.forEach(k=>{
+    const el=document.getElementById('fold-'+k);
+    if(!el) return;
+    el.addEventListener('toggle',()=>{
+      DB.data.settings.folds=DB.data.settings.folds||{};
+      DB.data.settings.folds[k]=el.open?1:0;
+      DB.save();
+    });
+  });
+}
 
 // ================= 6.6 作战方案模块（阶段 / 里程碑 / 章节地图 / 月度汇报） =================
 const STAGES=[
@@ -1282,6 +1320,45 @@ const Outline={
     if(!confirm('删除「'+s+'」的提纲？勾选进度将一并清除')) return;
     delete DB.data.outlines[s]; DB.save(); this.render(); toast('提纲已删除');
   },
+  // mammoth 输出的 HTML → 提纲行（标题样式→章，列表项/段落→知识点）
+  htmlToLines(html){
+    const tmp=document.createElement('div'); tmp.innerHTML=html||'';
+    const lines=[];
+    tmp.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li').forEach(el=>{
+      const t=(el.textContent||'').trim();
+      if(!t) return;
+      if(el.tagName!=='LI' && el.closest('li')) return; // 列表项内嵌套段落跳过，避免重复
+      if(/^H[1-6]$/.test(el.tagName)) lines.push('# '+t);
+      else if(el.tagName==='LI') lines.push('- '+t);
+      else lines.push(t);
+    });
+    return lines.join('\n');
+  },
+  fromFile(file){
+    if(!file) return;
+    const ext=(file.name.split('.').pop()||'').toLowerCase();
+    if(ext==='docx'){
+      if(typeof mammoth==='undefined'){ toast('解析库尚未加载完成，请稍候重试或改用粘贴导入'); return; }
+      file.arrayBuffer().then(buf=>mammoth.convertToHtml({arrayBuffer:buf}))
+        .then(r=>this._fileImport(this.htmlToLines(r.value), file.name))
+        .catch(e=>toast('解析失败：'+e.message+'（老格式 .doc 请先另存为 .docx）'));
+    }else{
+      file.text().then(t=>this._fileImport(t, file.name)).catch(e=>toast('读取失败：'+e.message));
+    }
+  },
+  _fileImport(text, fname){
+    let t=String(text||'').trim();
+    if(!t){ toast('文件内容为空'); return; }
+    if(!/^【.+?】\s*$/m.test(t)){
+      const def=(fname||'').replace(/\.[^.]+$/,'');
+      const raw=prompt('文中未写【科目名】，提纲归属哪个科目？', def);
+      if(raw===null) return;
+      const name=raw.trim();
+      if(!name){ toast('科目名不能为空，已取消导入'); return; }
+      t='【'+name+'】\n'+t;
+    }
+    this.importText(t);
+  },
   importText(text){
     const r=this.parse(text);
     const subs=Object.keys(r.res).filter(s=>r.res[s].length);
@@ -1303,6 +1380,12 @@ const Outline={
   }
 };
 $('#outlineImport').addEventListener('click',()=>Outline.importText($('#outlineBox').value));
+$('#outlineFileBtn').addEventListener('click',()=>$('#outlineFile').click());
+$('#outlineFile').addEventListener('change',function(){
+  const f=this.files&&this.files[0];
+  if(f) Outline.fromFile(f);
+  this.value=''; // 允许连续选择同一文件
+});
 
 // ================= 8. 院校库模块 =================
 /* 数据条目：[名称, 省份, 层次]  A=985  B=211(非985)  C=双一流(非211)
@@ -1639,6 +1722,8 @@ Sched.setVariant(Sched.variant); // 作息表按今天是工作日/周末自动�
 renderChap();            // 839 章节地图渲染
 Pomo.renderDur();        // 番茄钟专注时长选择
 Pomo.renderBreak();      // 番茄钟休息时长选择
+bindFolds();             // 折叠卡事件绑定
+applyFolds();            // 恢复上次的折叠/展开状态
 </script>
 </body>
 </html>
