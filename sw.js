@@ -1,5 +1,5 @@
 /* 考研助手 Service Worker：缓存全部资源，支持离线打开 */
-const CACHE = 'kaoyan-cache-v20';
+const CACHE = 'kaoyan-cache-v24';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './mammoth.browser.min.js'];
 
 self.addEventListener('install', e => {

@@ -64,6 +64,23 @@ details.fold:not([open])>summary{margin-bottom:0}
 .hero-days span{font-size:52px;font-weight:700;line-height:1;letter-spacing:-1px}
 .hero-days small{font-size:15px;opacity:.9}
 .hero-date{font-size:13px;opacity:.85}
+/* 今日学习时长 */
+.ts-total{font-size:30px;font-weight:700;margin:2px 0 4px}
+.ts-total small{font-size:13px;color:var(--muted);margin-left:4px}
+.ts-trend{font-size:13px;color:var(--muted);margin-bottom:10px}
+.ts-trend .up{color:#53C58A}
+.ts-trend .down{color:#F7A55B}
+.ts-detail>summary{list-style:none;cursor:pointer;user-select:none;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;padding:6px 0}
+.ts-detail>summary::-webkit-details-marker{display:none}
+.ts-detail>summary::after{content:'▾';font-size:11px;transition:transform .2s}
+.ts-detail:not([open])>summary::after{transform:rotate(-90deg)}
+.ts-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px}
+.ts-row span{width:62px;color:var(--muted);flex-shrink:0}
+.ts-row .bar{flex:1;height:8px;background:#2A3142;border-radius:4px;overflow:hidden}
+.ts-row .bar i{display:block;height:100%;border-radius:4px}
+.ts-row b{width:48px;text-align:right;flex-shrink:0;color:var(--text)}
+.ts-item{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted);padding:6px 0;border-top:1px solid #2A3142}
+.ts-tag{color:#F7A55B;font-size:11px;border:1px solid #F7A55B;border-radius:3px;padding:0 3px;margin-right:4px}
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
 .stat-item{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:12px 6px;text-align:center}
 .stat-item b{display:block;font-size:18px;font-weight:700;color:var(--primary)}
@@ -304,13 +321,25 @@ textarea.note-input{height:84px;resize:vertical}
     <!-- ================= 首页看板 ================= -->
     <section class="page active" id="page-home">
       <header class="topbar">
-        <div><h1 id="greeting">你好</h1><p class="sub" id="todayText"></p></div>
+        <div><h1 id="greeting">你好</h1><p class="sub" id="todayText"></p><p class="sub" id="quoteText" style="color:#8FA0B8"></p></div>
         <button class="icon-btn" id="editExamBtn" title="设置考试日期">✎</button>
       </header>
       <div class="card hero">
         <p class="hero-label">距离考研初试还有</p>
         <div class="hero-days"><span id="daysLeft">--</span><small>天</small></div>
         <p class="hero-date" id="examDateText"></p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>⏱ 今日学习时长</h2><button class="mini-btn" id="tsAddBtn">＋ 补录</button></div>
+        <div id="todayStats"></div>
+        <div class="plan-form hidden" id="tsForm">
+          <select id="tsSubject"></select>
+          <input type="number" id="tsMin" min="1" max="600" placeholder="学习分钟数（1–600）">
+          <div style="display:flex;gap:10px">
+            <button class="mini-btn ghost" id="tsCancel" style="flex:1">取消</button>
+            <button class="mini-btn" id="tsSave" style="flex:2;background:var(--primary);color:#fff">保存补录</button>
+          </div>
+        </div>
       </div>
       <div class="card">
         <div class="card-head"><h2>📍 当前阶段</h2><span id="stageDays"></span></div>
@@ -335,14 +364,16 @@ textarea.note-input{height:84px;resize:vertical}
         <div id="homeTaskList"></div>
       </div>
       <div class="card">
-        <div class="card-head"><h2>最近学习</h2></div>
-        <div id="recentList"></div>
+        <details class="fold" id="fold-recent">
+          <summary class="card-head"><h2>🕘 最近学习</h2><span>点开查看</span></summary>
+          <div id="recentList"></div>
+        </details>
       </div>
     </section>
 
     <!-- ================= 学习计划 ================= -->
     <section class="page" id="page-plan">
-      <header class="topbar"><div><h1>学习计划</h1><p class="sub">专注计时 · 计划 · 打卡</p></div></header>
+      <header class="topbar"><div><h1>学习计划</h1><p class="sub" id="planSub">专注计时 · 计划 · 打卡</p></div></header>
       <div class="date-strip" id="dateStrip"></div>
       <div class="card">
         <div class="card-head"><h2>🍅 番茄钟</h2><span id="pomoStateText">专注 25 分钟</span></div>
@@ -503,6 +534,14 @@ textarea.note-input{height:84px;resize:vertical}
         <div class="mine-row"><span>目标院校</span><b id="msFavs">0 所</b></div>
       </div>
       <div class="card">
+        <div class="card-head"><h2>💬 自定义激励语</h2><span id="quoteCount">0 条</span></div>
+        <textarea class="note-input" id="quoteBox" placeholder="每行一条，例如：
+上岸见。
+今晚的 90 分钟数学，就是你的录取通知书。"></textarea>
+        <button class="primary-btn" id="quoteSave" style="width:100%;margin-top:10px">保存自定义激励语</button>
+        <p style="font-size:11px;color:#B7BFCE;margin-top:8px">保存后与内置语录合并展示（首页/打卡/番茄钟完成都会随机出现）。留空保存即清空自定义。随备份与云同步。</p>
+      </div>
+      <div class="card">
         <div class="card-head"><h2>☁️ 云端同步</h2><span id="cloudStatus"></span></div>
         <input class="note-input" id="cloudToken" placeholder="GitHub Token（gist 权限的个人令牌）" style="margin-top:0">
         <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
@@ -555,7 +594,7 @@ textarea.note-input{height:84px;resize:vertical}
           <button class="mine-btn warn" id="btnClear">清空全部数据<small>不可恢复，建议先导出备份</small></button>
         </div>
       </div>
-      <p style="text-align:center;font-size:11px;color:#B7BFCE;margin-top:12px">考研助手 v3.0 · 作战方案版</p>
+      <p style="text-align:center;font-size:11px;color:#B7BFCE;margin-top:12px">考研助手 v3.4 · 作战方案版</p>
     </section>
   </main>
 
@@ -655,7 +694,9 @@ const DB = {
     const d=this.data;
     d.plans=d.plans||[]; d.checkins=d.checkins||{}; d.sessions=d.sessions||[];
     d.questions=d.questions||[]; d.wrongBook=d.wrongBook||{}; d.exams=d.exams||[]; d.collegeNotes=d.collegeNotes||{}; d.schedule=d.schedule||[];
-    d.reports=d.reports||[]; d.milestoneDone=d.milestoneDone||{}; d.outlines=d.outlines||{};
+    d.reports=d.reports||[]; d.milestoneDone=d.milestoneDone||{}; d.outlines=d.outlines||{}; d.quotes=d.quotes||[];
+    d.settings=d.settings||{};
+    if(!d.settings.weekAnchor) d.settings.weekAnchor='2026-08-31'; // 学期第一周周一（周数锚点）
     if(d.schedule.length&&!d.settings.scheduleWeekday) d.settings.scheduleWeekday=d.schedule; // 旧版单作息迁移为工作日作息
     d.answered=d.answered||0; d.correct=d.correct||0;
     d.settings=Object.assign({examDate:'2027-12-25', pomodoroMin:25, breakMin:5, pomodoroSubject:'物理光学'}, d.settings||{});
@@ -734,7 +775,7 @@ const DB = {
   },
   addSession(subject, seconds, source){
     if(seconds<30) return;
-    this.data.sessions.push({date:todayStr(), subject:subject||'未分类', seconds:Math.round(seconds), source:source||'manual'});
+    this.data.sessions.push({id:uid(), date:todayStr(), subject:subject||'未分类', seconds:Math.round(seconds), source:source||'manual'});
     this.save();
   }
 };
@@ -753,10 +794,95 @@ function switchPage(id){
 }
 
 // ================= 4. 首页看板 =================
+// 周数：锚点=学期第一周周一，每周一递增；锚点之前不显示
+function weekNoText(){
+  const a=DB.data.settings.weekAnchor;
+  if(!a) return '';
+  const n=Math.floor((new Date(todayStr()+'T00:00:00')-new Date(a+'T00:00:00'))/604800000)+1;
+  return n>=1?'第 '+n+' 周':'';
+}
+// ---- 激励语：内置三池 + 自定义合并，日期哈希保证当天稳定 ----
+const QUOTE_DAILY=[
+'背过的每个单词，都是初试考场上的熟面孔。',
+'数学不是听会的，是合上书自己做出来的。',
+'今天多弄懂一道错题，12 月的你就多一分从容。',
+'普物的公式不在书里，在你推导过的草稿纸上。',
+'你不需要每天都状态拉满，只需要今天别缺席。',
+'18:30 坐下的那一刻，你就已经赢过大多数人了。',
+'累了可以慢，但不能停——考研淘汰的从来不是慢的人。',
+'别人刷短视频的时间，正在悄悄变成你的分数线。',
+'每一张写满的草稿纸，都是南昌大学寄来的预录取通知。',
+'计划完成 70% 也远胜于计划完美但没执行。',
+'现在流的每一滴汗，都在给 2027 年 12 月的你写信。',
+'基础阶段不追求快，追求「合上书能复述」。',
+'错题本越厚，考场越薄——今天整理了吗？',
+'坐得住是能力，坐得久是本事，坚持 13 个月是奇迹。',
+'单词今天背了 50 个？你已经领先昨天的自己了。',
+'光学是你的强项，先用它把做题手感焊死。',
+'电磁学最难，所以最值钱——啃下来就是拉开差距的地方。',
+'期末考会打断你，但打断不了你的习惯。',
+'别看总分 370，看今天晚上的 90 分钟数学。',
+'每周 37.5 小时，不多不少，刚好够把你送进复试名单。',
+'复盘三句话写了吗？写完再走。',
+'你和南昌大学之间，只隔着一个稳定的每天 3 小时。',
+'学不进去的时候，先坐 5 分钟，往往就能坐 50 分钟。',
+'真题是最懂出题人的老师，可惜你还没把它请回家。',
+'番茄钟又攒了一个，25 分钟的复利正在滚。',
+'备考拼的不是爆发力，是「第二天照样来」。'
+];
+const QUOTE_COMFORT=[
+'状态差不是你的错，是大脑在提醒你该休息了——明天照常来。',
+'今天没完成计划没关系，缺口会在寒假一次性补回，方案里写好的。',
+'落后一周不可怕，可怕的是用自我否定再搭进去一周。',
+'允许自己有低谷，低谷期保持「单词 + 错题」的最低运转就是胜利。',
+'你不是学不会，只是今天的大脑占用满了。',
+'考研是个长周期项目，单日波动不影响最终曲线。',
+'卡壳的时候换个科目，硬刚数学最亏。',
+'休息一天不会毁掉 13 个月的计划，自暴自弃才会。',
+'焦虑说明你在乎——把在乎变成今晚的 90 分钟。',
+'打球的 1 小时不是浪费，是给晚上 3 小时充电。'
+];
+const QUOTE_SPRINT=[
+'倒计时两位数了：从现在起，每一小时都标了价。',
+'最后 30 天，不做新题，只回炉错题——把会做的分全拿到。',
+'此刻多背一个政治考点，考场上就少一次抓耳挠腮。',
+'作文模板默写第几遍了？肌肉记忆不骗人。',
+'冲刺期最大的敌人是「我觉得差不多了」。',
+'作息已经调到考试时段了，生物钟就是你的隐形加分项。',
+'12 月 25 日的你，正在感谢今天没偷懒的你。',
+'模考不是测分数，是练「在压力下把会的做对」。',
+'最后阶段：政治押题背诵 + 错题本回炉，其他都是干扰项。',
+'一志愿上线就基本进复试——你离过线，就差把会的分拿稳。',
+'别再买新资料了，你缺的不是书，是重复的次数。',
+'考前最后一周：只看、只背、只默写，不学任何新东西。'
+];
+function qhash(s){ let h=0; for(const c of String(s)) h=(h*31+c.charCodeAt(0))>>>0; return h; }
+function qDaysToExam(){
+  return Math.ceil((new Date(DB.data.settings.examDate+'T00:00:00')-new Date(todayStr()+'T00:00:00'))/86400000);
+}
+function pickQuote(kind,seed){
+  const custom=DB.data.quotes||[];
+  const pool=(kind==='comfort'?QUOTE_COMFORT:(qDaysToExam()<=30?QUOTE_SPRINT:QUOTE_DAILY)).concat(custom);
+  return pool[qhash(seed)%pool.length];
+}
+function homeQuote(){
+  const today=todayStr();
+  let last=null;
+  for(const k of Object.keys(DB.data.checkins)){ if(k<=today&&(!last||k>last)) last=k; }
+  if(last){
+    const gap=Math.floor((new Date(today+'T00:00:00')-new Date(last+'T00:00:00'))/86400000);
+    if(gap>=3) return '欢迎回来 · '+pickQuote('comfort',today+'back'); // 连续3天未打卡，安慰型
+  }
+  const days=qDaysToExam();
+  if(days===100) return '距初试整 100 天——从这一刻起，每个数字都开始倒数。';
+  if(days===50) return '距初试 50 天：收起杂念，你的对手已经开始冲刺。';
+  return pickQuote('daily',today);
+}
 function renderHome(){
   const d=DB.data, now=new Date(), h=now.getHours();
   $('#greeting').textContent = h<6?'夜深了':h<11?'早上好':h<14?'中午好':h<18?'下午好':'晚上好';
-  $('#todayText').textContent = now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 · 星期'+WEEK[now.getDay()];
+  $('#todayText').textContent = now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 · 星期'+WEEK[now.getDay()]+(weekNoText()?' · '+weekNoText():'');
+  $('#quoteText').textContent = homeQuote();
 
   // 倒计时
   const exam=new Date(d.settings.examDate+'T00:00:00');
@@ -793,7 +919,52 @@ function renderHome(){
   $('#recentList').innerHTML = items.length
     ? items.slice(-5).reverse().map(it=>`<div class="recent-item"><span class="ric">${it.ic}</span><span class="rt">${it.t}<small>${it.sub}</small></span></div>`).join('')
     : '<div class="empty">暂无学习记录，开始第一次专注吧</div>';
+
+  TodayStats.render();
 }
+
+// ---- 今日学习时长模块（总时长 + 趋势副行 + 分科条 + 明细折叠 + 补录） ----
+const TodayStats={
+  detailOpen:false, // 明细展开状态跨渲染记忆
+  render(){
+    const today=todayStr();
+    const list=DB.data.sessions.filter(s=>s.date===today);
+    const total=list.reduce((t,s)=>t+(s.seconds||0),0);
+    // 趋势：昨日 + 本周日均（周一为一周起点，均摊到今天为止的天数）
+    const yd=new Date(); yd.setDate(yd.getDate()-1);
+    const yest=DB.data.sessions.filter(s=>s.date===fmtDate(yd)).reduce((t,s)=>t+(s.seconds||0),0);
+    const now=new Date();
+    const mon=new Date(now); mon.setDate(now.getDate()-((now.getDay()+6)%7));
+    const days=Math.floor((now-mon)/86400000)+1;
+    let wsum=0;
+    for(let i=0;i<days;i++){ const dd=new Date(mon); dd.setDate(mon.getDate()+i); wsum+=DB.data.sessions.filter(s=>s.date===fmtDate(dd)).reduce((t,s)=>t+(s.seconds||0),0); }
+    const avg=Math.round(wsum/days/60);
+    const dm=Math.round((total-yest)/60);
+    // 总时长
+    const mins=Math.round(total/60);
+    const totalText = mins>=60 ? Math.floor(mins/60)+'<small>小时</small>'+(mins%60)+'<small>分</small>' : mins+'<small>分钟</small>';
+    // 分科条
+    const by={};
+    list.forEach(s=>{ by[s.subject]=(by[s.subject]||0)+(s.seconds||0); });
+    const subs=Object.keys(by).sort((a,b)=>by[b]-by[a]);
+    const max=Math.max(1,...subs.map(k=>by[k]));
+    let html='<div class="ts-total">'+(totalText||'0<small>分钟</small>')+'</div>';
+    html += (!total&&!yest) ? '' : '<div class="ts-trend">'+(dm>0?'<span class="up">↑ 较昨日 +'+dm+' 分</span>':dm<0?'<span class="down">↓ 较昨日 '+dm+' 分</span>':'<span>— 与昨日持平</span>')+' · 周均 '+avg+' 分</div>';
+    html += subs.length
+      ? '<div class="ts-bars">'+subs.map(k=>'<div class="ts-row"><span>'+esc(k)+'</span><div class="bar"><i style="width:'+Math.round(by[k]/max*100)+'%;background:'+subjectColor(k)+'"></i></div><b>'+Math.round(by[k]/60)+' 分</b></div>').join('')+'</div>'
+      : '<div class="empty">今天还没有专注记录，开一个番茄钟吧</div>';
+    // 今日明细（默认收起，补录可删）
+    const tl=list.slice(-10).reverse();
+    if(tl.length){
+      html += '<details class="ts-detail"'+(this.detailOpen?' open':'')+'><summary>今日明细（'+tl.length+' 条）</summary><div class="ts-list">'
+        + tl.map(s=>'<div class="ts-item"><span>'+(s.source==='manual'?'<b class="ts-tag">补</b>':'')+esc(s.subject)+' · '+Math.round(s.seconds/60)+' 分</span>'+(s.source==='manual'&&s.id?'<button class="mini-btn ghost" data-del="'+s.id+'">删除</button>':'')+'</div>').join('')
+        + '</div></details>';
+    }
+    $('#todayStats').innerHTML=html;
+    const det=$('#todayStats .ts-detail');
+    if(det) det.addEventListener('toggle',()=>{ TodayStats.detailOpen=det.open; });
+  }
+};
 
 // ================= 5. 学习计划页 =================
 const Plan = {
@@ -877,7 +1048,10 @@ $('#checkinBtn').addEventListener('click',()=>{
   const t=new Date(), key=todayStr();
   if(DB.data.checkins[key]) return;
   DB.data.checkins[key]={time:pad(t.getHours())+':'+pad(t.getMinutes())};
-  DB.save(); Plan.render(); toast('打卡成功，连续 '+DB.streak()+' 天！');
+  DB.save(); Plan.render();
+  const st=DB.streak();
+  const head=(st===7||st===30||st===100)?'🔥 连续打卡 '+st+' 天！':'打卡成功，连续 '+st+' 天！';
+  toast(head+' '+pickQuote('daily',key+'ck'));
 });
 
 // ================= 6. 番茄钟模块 =================
@@ -999,10 +1173,11 @@ const Pomo = {
     this.state='idle'; this.acc=0;
     if(complete){
       DB.addSession(this.subject, this.total(), 'pomodoro');
-      toast('🍅 番茄钟完成！已记录 '+DB.data.settings.pomodoroMin+' 分钟'+(DB.data.settings.silentMode?'（图书馆模式）':'，休息一下吧'));
+      const qq=pickQuote('daily','pomo'+todayStr()+Math.floor(Date.now()/60000));
+      toast('🍅 番茄钟完成！已记录 '+DB.data.settings.pomodoroMin+' 分钟'+(DB.data.settings.silentMode?'（图书馆模式）':'，休息一下吧')+'　'+qq);
       // 系统通知：两种模式都发送
       if(window.Notification && Notification.permission==='granted'){
-        try{ new Notification('🍅 番茄钟完成', {body:'已完成 '+DB.data.settings.pomodoroMin+' 分钟专注，起来活动一下吧！'}); }catch(e){}
+        try{ new Notification('🍅 番茄钟完成', {body:'已完成 '+DB.data.settings.pomodoroMin+' 分钟专注 · '+pickQuote('daily','pomo'+todayStr()+Math.floor(Date.now()/60000))}); }catch(e){}
       }
       if(!DB.data.settings.silentMode){
         beep(3);   // 铃声三响
@@ -1123,7 +1298,7 @@ $('#tabWeekday').addEventListener('click',e=>{ e.stopPropagation(); Sched.setVar
 $('#tabWeekend').addEventListener('click',e=>{ e.stopPropagation(); Sched.setVariant('weekend'); });
 
 // ---- 折叠卡状态记忆 ----
-const FOLD_KEYS=['sched','chap','outline','mile','red'];
+const FOLD_KEYS=['sched','chap','outline','mile','red','recent'];
 function applyFolds(){
   const f=DB.data.settings.folds||{};
   FOLD_KEYS.forEach(k=>{
@@ -1386,6 +1561,32 @@ $('#outlineFile').addEventListener('change',function(){
   if(f) Outline.fromFile(f);
   this.value=''; // 允许连续选择同一文件
 });
+$('#quoteSave').addEventListener('click',()=>{
+  const lines=$('#quoteBox').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(lines.length>50){ toast('最多 50 条自定义激励语'); return; }
+  DB.data.quotes=lines; DB.save(); renderMine();
+  toast('已保存自定义激励语（'+lines.length+' 条）');
+});
+// ---- 今日时长补录 ----
+$('#tsAddBtn').addEventListener('click',()=>{
+  $('#tsSubject').innerHTML=DB.subjects().map(s=>`<option>${esc(s)}</option>`).join('');
+  $('#tsForm').classList.toggle('hidden');
+});
+$('#tsCancel').addEventListener('click',()=>$('#tsForm').classList.add('hidden'));
+$('#tsSave').addEventListener('click',()=>{
+  const m=parseInt($('#tsMin').value,10);
+  if(!m||m<1||m>600){ toast('请输入 1–600 的分钟数'); return; }
+  DB.addSession($('#tsSubject').value,m*60,'manual');
+  $('#tsForm').classList.add('hidden'); $('#tsMin').value='';
+  TodayStats.render(); toast('已补录 '+m+' 分钟（'+$('#tsSubject').value+'）');
+});
+$('#todayStats').addEventListener('click',e=>{
+  const id=e.target.dataset&&e.target.dataset.del;
+  if(!id) return;
+  if(!confirm('删除这条补录记录？')) return;
+  DB.data.sessions=DB.data.sessions.filter(s=>s.id!==id);
+  DB.save(); TodayStats.render();
+});
 
 // ================= 8. 院校库模块 =================
 /* 数据条目：[名称, 省份, 层次]  A=985  B=211(非985)  C=双一流(非211)
@@ -1519,6 +1720,8 @@ $('#cdSaveBtn').addEventListener('click',()=>{
 // ================= 9. 我的 / 数据管理 =================
 function renderMine(){
   const d=DB.data;
+  $('#quoteBox').value=(d.quotes||[]).join('\n');
+  $('#quoteCount').textContent=(d.quotes||[]).length+' 条';
   Report.render();
   $('#msDuration').textContent=fmtMin(DB.totalDuration());
   $('#msExams').textContent=(d.sessions||[]).length+' 轮';
@@ -1724,6 +1927,7 @@ Pomo.renderDur();        // 番茄钟专注时长选择
 Pomo.renderBreak();      // 番茄钟休息时长选择
 bindFolds();             // 折叠卡事件绑定
 applyFolds();            // 恢复上次的折叠/展开状态
+(function(){ const w=weekNoText(); $('#planSub').textContent='专注计时 · 计划 · 打卡'+(w?' · '+w:''); })(); // 计划页副标题周数
 </script>
 </body>
 </html>
