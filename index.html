@@ -540,7 +540,7 @@ textarea.note-input{height:84px;resize:vertical}
           <button class="mine-btn warn" id="btnClear">清空全部数据<small>不可恢复，建议先导出备份</small></button>
         </div>
       </div>
-      <p style="text-align:center;font-size:11px;color:#B7BFCE;margin-top:12px">考研助手 v2.6 · 作战方案版</p>
+      <p style="text-align:center;font-size:11px;color:#B7BFCE;margin-top:12px">考研助手 v2.7 · 作战方案版</p>
     </section>
   </main>
 
@@ -1452,10 +1452,27 @@ const Cloud={
   headers(){ return {Authorization:'token '+this.token,'Content-Type':'application/json',Accept:'application/vnd.github+json'}; },
   status(text){ $('#cloudStatus').textContent=text; },
   render(){
-    $('#cloudToken').value=DB.data.settings.gtoken||'';
-    $('#cloudGid').value=DB.data.settings.gid||'';
+    // 回填存储值，但绝不覆盖输入框中尚未保存的新输入（防止 Token 被"洗掉"）
+    const tEl=$('#cloudToken'), gEl=$('#cloudGid');
+    const sTk=DB.data.settings.gtoken||'', sGd=DB.data.settings.gid||'';
+    if(document.activeElement!==tEl){
+      if(!sTk && tEl.value.trim()){ DB.data.settings.gtoken=tEl.value.trim(); DB.save(); }
+      else tEl.value=sTk;
+    }
+    if(document.activeElement!==gEl){
+      if(!sGd && gEl.value.trim()){ DB.data.settings.gid=gEl.value.trim(); DB.save(); }
+      else gEl.value=sGd;
+    }
     $('#cloudAuto').checked=this.autoOn;
     this.status(this.lastSync?('✅ '+this.lastSync):'未同步');
+  },
+  syncInput(){
+    // 任何云操作前先把输入框内容落库，避免失焦/时序问题
+    const t=($('#cloudToken').value||'').trim(), g=($('#cloudGid').value||'').trim();
+    let ch=false;
+    if(t && t!==DB.data.settings.gtoken){ DB.data.settings.gtoken=t; ch=true; }
+    if(g && g!==DB.data.settings.gid){ DB.data.settings.gid=g; ch=true; }
+    if(ch) DB.save();
   },
   async api(method,path,body){
     const res=await fetch('https://api.github.com'+path,{method,headers:this.headers(),body:body?JSON.stringify(body):undefined});
@@ -1465,6 +1482,7 @@ const Cloud={
   payload(){ return JSON.stringify(DB.data); },
   validObj(obj){ return !!(obj&&Array.isArray(obj.questions)&&obj.settings); },
   async create(){
+    this.syncInput();
     if(!this.token){ toast('请先填写 GitHub Token'); return; }
     try{
       const g=await this.api('POST','/gists',{description:'考研助手自动备份（私有）',public:false,files:{'kaoyan-backup.json':{content:this.payload()}}});
@@ -1473,6 +1491,7 @@ const Cloud={
     }catch(e){ toast('创建失败：'+e.message); }
   },
   async upload(silent){
+    this.syncInput();
     if(!this.token||!this.gid){ if(!silent) toast('请先填写 Token 并创建云端库'); return; }
     try{
       await this.api('PATCH','/gists/'+this.gid,{files:{'kaoyan-backup.json':{content:this.payload()}}});
@@ -1490,7 +1509,12 @@ const Cloud={
       if(!this.validObj(obj)){ toast('云端备份格式异常'); return; }
       if(!silent && !confirm('用云端备份覆盖当前本地数据？')) return;
       this.busy=true;
-      DB.data=obj; DB.migrate(); DB.save();
+      const localTk=DB.data.settings.gtoken, localGd=DB.data.settings.gid;
+      DB.data=obj; DB.migrate();
+      // 云端备份若缺凭证（旧版本备份/异地导出），保留本地 Token 与云端库 ID
+      if(!DB.data.settings.gtoken && localTk) DB.data.settings.gtoken=localTk;
+      if(!DB.data.settings.gid && localGd) DB.data.settings.gid=localGd;
+      DB.save();
       this.busy=false;
       this.lastSync='已恢复云端 '+new Date().toTimeString().slice(0,5); this.status(this.lastSync);
       renderMine(); renderHome();
@@ -1521,6 +1545,18 @@ $('#cloudUp').addEventListener('click',()=>Cloud.upload(false));
 $('#cloudDown').addEventListener('click',()=>Cloud.restore(false));
 $('#cloudToken').addEventListener('change',function(){ DB.data.settings.gtoken=this.value.trim(); DB.save(); });
 $('#cloudGid').addEventListener('change',function(){ DB.data.settings.gid=this.value.trim(); DB.save(); });
+// 输入即存（防抖 400ms）：手机上粘贴后直接点按钮也不会丢 Token
+let cloudInputTimer=null;
+function persistCloudInput(){
+  clearTimeout(cloudInputTimer);
+  cloudInputTimer=setTimeout(()=>{
+    DB.data.settings.gtoken=($('#cloudToken').value||'').trim();
+    DB.data.settings.gid=($('#cloudGid').value||'').trim();
+    DB.save();
+  },400);
+}
+$('#cloudToken').addEventListener('input',persistCloudInput);
+$('#cloudGid').addEventListener('input',persistCloudInput);
 $('#cloudAuto').addEventListener('change',function(){
   DB.data.settings.autoSync=this.checked; DB.save();
   toast(this.checked?'⚡ 自动同步已开启':'自动同步已关闭');
