@@ -1,7 +1,7 @@
 {
   "name": "考研助手",
   "short_name": "考研助手",
-  "description": "考研自用学习助手：学习计划、打卡、番茄钟、题库刷题、错题本、模拟测试",
+  "description": "考研自用学习助手：学习计划、打卡、番茄钟、院校库、作战方案",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

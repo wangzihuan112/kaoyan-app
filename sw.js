@@ -1,5 +1,5 @@
 /* 考研助手 Service Worker：缓存全部资源，支持离线打开 */
-const CACHE = 'kaoyan-cache-v8';
+const CACHE = 'kaoyan-cache-v16';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './questions.json'];
 
 self.addEventListener('install', e => {

@@ -123,6 +123,59 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 .silent-label{flex:1;font-size:13px;font-weight:600}
 .silent-label small{display:block;font-weight:400;font-size:11px;color:var(--muted);margin-top:2px}
 .silent-label small b{color:var(--primary);font-weight:600}
+.sched-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;border-top:1px solid var(--bg)}
+.sched-item:first-child{border-top:none}
+.sched-item.now{background:var(--tint)}
+.sched-time{font-size:13px;font-weight:700;color:var(--primary);width:96px;flex-shrink:0;font-variant-numeric:tabular-nums}
+.sched-label{flex:1;font-size:14px;font-weight:600}
+.sched-label small{display:block;font-weight:400;font-size:11px;color:var(--muted)}
+.now-badge{display:inline-block;margin-left:8px;font-size:10px;background:var(--primary);color:#fff;border-radius:6px;padding:1px 6px;font-weight:600}
+.pomo-set{display:flex;align-items:center;gap:10px;margin-top:10px}
+.pomo-set-label{font-size:12px;color:var(--muted);flex-shrink:0;width:30px;font-weight:600}
+.pomo-set .chip{padding:5px 12px;font-size:12px}
+.sched-tabs{display:flex;gap:6px}
+.sched-tabs .mini-btn{padding:4px 10px;font-size:11px}
+.stage-name{font-size:16px;font-weight:700;margin-bottom:4px}
+.stage-range{font-size:12px;color:var(--muted);margin-bottom:8px}
+.stage-progress{height:6px;background:var(--bg);border-radius:4px;overflow:hidden;margin-bottom:10px}
+.stage-progress i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--ok));border-radius:4px}
+.stage-task{font-size:13px;padding:5px 0 5px 2px;color:var(--ink)}
+.stage-task::before{content:'▸ ';color:var(--primary);font-weight:700}
+.mile-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--bg)}
+.mile-row:first-child{border-top:none}
+.mile-row .plan-check{margin-top:1px}
+.mile-row span{flex:1;font-size:13px;line-height:1.5}
+.mile-row.done span{color:var(--muted);text-decoration:line-through}
+.mile-date{font-size:12px;font-weight:700;color:var(--primary);margin:10px 0 2px}
+.mile-date.past{color:var(--muted)}
+.ol-subject{margin-bottom:16px}
+.ol-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ol-head b{font-size:14px}
+.ol-head span{flex:1;font-size:12px;color:var(--muted)}
+.ol-del{background:none;border:none;color:#C3C9D6;font-size:13px;padding:2px 6px;cursor:pointer}
+.ol-del:active{color:var(--bad)}
+.ol-bar{height:6px;background:var(--bg);border-radius:4px;overflow:hidden;margin-bottom:4px}
+.ol-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--ok));border-radius:4px;transition:width .3s}
+.ol-chap{font-size:12px;font-weight:700;color:var(--primary);margin:10px 0 2px}
+.ol-item{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px dashed #F0F2F7;cursor:pointer}
+.ol-item:first-of-type{border-top:none}
+.ol-item button{margin-top:1px}
+.ol-item span{flex:1;font-size:13px;line-height:1.5}
+.ol-item.done span{color:var(--muted);text-decoration:line-through}
+.redline-item{font-size:13px;line-height:1.6;padding:8px 0;border-top:1px solid var(--bg);color:var(--ink)}
+.redline-item:first-of-type{border-top:none}
+.redline-item b{color:var(--bad);margin-right:8px}
+.chap-row{display:flex;gap:8px;align-items:center;padding:6px 0;font-size:13px;border-top:1px solid var(--bg)}
+.chap-row:first-child{border-top:none}
+.chap-row .chap-p{font-size:11px;color:var(--muted);width:86px;flex-shrink:0}
+.chap-row .chap-s{flex:1;font-weight:600}
+.chap-tag{font-size:10px;border-radius:6px;padding:2px 7px;font-weight:600;flex-shrink:0}
+.chap-must{background:#EAFBF2;color:#0F9D58}
+.chap-unknown{background:#FFF6E8;color:#B7791F}
+.chap-skip{background:#F3F5FA;color:#98A2B3}
+.report-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.report-grid label{font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.report-grid input{border:1.5px solid #E3E9F5;border-radius:10px;padding:8px;font-size:14px;font-family:inherit;background:var(--bg);width:100%}
 .switch{position:relative;width:46px;height:26px;flex-shrink:0}
 .switch input{opacity:0;width:0;height:0}
 .slider{position:absolute;inset:0;background:#C9D4F2;border-radius:26px;transition:.25s}
@@ -254,11 +307,16 @@ textarea.note-input{height:84px;resize:vertical}
         <div class="hero-days"><span id="daysLeft">--</span><small>天</small></div>
         <p class="hero-date" id="examDateText"></p>
       </div>
+      <div class="card">
+        <div class="card-head"><h2>📍 当前阶段</h2><span id="stageDays"></span></div>
+        <div id="stageBody"></div>
+        <p style="font-size:11px;color:#B7BFCE;margin-top:10px">目标分 · 底线 320（政60/英60/数90/普物110）　争取 370（政68/英72/数110/普物120）</p>
+      </div>
       <div class="stat-grid">
         <div class="stat-item"><b id="stStreak">0</b><i>连续打卡</i></div>
         <div class="stat-item"><b id="stToday">0分</b><i>今日时长</i></div>
-        <div class="stat-item"><b id="stAnswered">0</b><i>累计刷题</i></div>
-        <div class="stat-item"><b id="stAccuracy">--</b><i>正确率</i></div>
+        <div class="stat-item"><b id="stFocus">0</b><i>累计专注</i></div>
+        <div class="stat-item"><b id="stFav">0</b><i>目标院校</i></div>
       </div>
       <div class="card">
         <div class="card-head"><h2>今日任务</h2><span id="taskSummary">0/0</span></div>
@@ -298,9 +356,60 @@ textarea.note-input{height:84px;resize:vertical}
         <button class="checkin-btn" id="checkinBtn">点击打卡</button>
       </div>
       <div class="card">
+        <div class="card-head"><h2>⏰ 作息时间表</h2><span class="sched-tabs"><button class="mini-btn" id="tabWeekday">工作日</button><button class="mini-btn ghost" id="tabWeekend">周末</button></span></div>
+        <div id="schedList"></div>
+        <details class="fmt" id="schedDetails">
+          <summary>导入 / 修改作息表（点开粘贴文本）</summary>
+          <textarea class="note-input" id="schedBox" placeholder="每行一条，两种格式都支持：
+07:00-08:00 背单词
+07:00 背单词
+
+也可标注科目（会同步到计划任务）：
+08:00-10:00 数学强化【数学二】"></textarea>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="primary-btn" id="schedImport" style="flex:1">导入作息表</button>
+            <button class="mine-btn" id="schedToPlan" style="flex:1">按作息生成今日计划</button>
+          </div>
+        </details>
+      </div>
+      <div class="card">
+        <details class="fmt" id="chapDetails">
+          <summary>🗺️ 839 章节取舍地图（点开查看）</summary>
+          <div id="chapMap"></div>
+          <p style="font-size:11px;color:#B7BFCE;margin-top:8px">推荐复习顺序：光学 → 力学 → 电磁学 → 热学。拿到真题后逐项校准——真题是这张地图唯一的校准源。</p>
+        </details>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>📋 复习提纲</h2><span id="outlineSummary"></span></div>
+        <div id="outlineBody"></div>
+        <details class="fmt">
+          <summary>导入提纲（点开粘贴文本）</summary>
+          <textarea class="note-input" id="outlineBox" placeholder="【科目名】
+# 第一章 章名
+- 知识点1
+- 知识点2"></textarea>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="primary-btn" id="outlineImport" style="flex:1">导入提纲</button>
+          </div>
+          <p style="font-size:11px;color:#B7BFCE;margin-top:8px">【】行为科目；# 开头为章节分组；- 或普通行为知识点（勾选单位）。同一科目重复导入覆盖旧提纲与勾选进度。提纲自动纳入备份与云同步。</p>
+        </details>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>🎯 里程碑验收</h2><span id="mileNext"></span></div>
+        <div id="mileList"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>🚫 三条红线</h2></div>
+        <div class="redline-item"><b>红线一</b>数学不能用「听完了」自我欺骗，唯一判定标准：合上书，能否独立做出来。</div>
+        <div class="redline-item"><b>红线二</b>不追多套资料，一套名师体系用到底——买三套等于一套没买。</div>
+        <div class="redline-item"><b>红线三</b>2027 年 6 月之前不碰政治，不做无效回合交换。</div>
+      </div>
+      <div class="card">
         <div class="card-head"><h2>番茄钟</h2><span id="pomoStateText">专注 25 分钟</span></div>
         <div class="pomo-wrap">
           <div class="chip-row" id="pomoSubjectChips"></div>
+          <div class="pomo-set"><span class="pomo-set-label">专注</span><div class="chip-row" id="pomoDurChips" style="margin-bottom:0"></div></div>
+          <div class="pomo-set"><span class="pomo-set-label">休息</span><div class="chip-row" id="pomoBreakChips" style="margin-bottom:0"></div></div>
           <div class="pomo-ring">
             <svg viewBox="0 0 170 170">
               <circle class="ring-bg" cx="85" cy="85" r="74"/>
@@ -324,69 +433,21 @@ textarea.note-input{height:84px;resize:vertical}
       </div>
     </section>
 
-    <!-- ================= 刷题 ================= -->
-    <section class="page" id="page-quiz">
-      <!-- 入口视图 -->
-      <div id="quizHome">
-        <header class="topbar"><div><h1>刷题</h1><p class="sub" id="bankSummary">题库共 0 题</p></div></header>
-        <div class="card">
-          <div class="card-head"><h2>科目筛选</h2></div>
-          <div class="chip-row" id="subjectChips" style="justify-content:flex-start;margin-bottom:0"></div>
-        </div>
-        <div class="entry-grid">
-          <button class="entry-card" id="btnSeq"><div class="eic" style="background:var(--tint);color:var(--primary)">📖</div><b>顺序练习</b><small>按题库顺序逐题作答</small></button>
-          <button class="entry-card" id="btnRand"><div class="eic" style="background:#EAFBF2;color:var(--ok)">🎲</div><b>随机练习</b><small>随机打乱顺序刷题</small></button>
-          <button class="entry-card" id="btnWrong"><div class="eic" style="background:#FDEFF1;color:var(--bad)">📕</div><b>错题重做</b><small id="wrongCount">0 道错题</small></button>
-          <button class="entry-card" id="btnExamHome"><div class="eic" style="background:#FFF6E8;color:var(--warn)">⏱️</div><b>模拟测试</b><small>限时组卷 统一评分</small></button>
-        </div>
-        <div class="card">
-          <div class="card-head"><h2>模拟测试设置</h2></div>
-          <div class="exam-setup">
-            <select id="examCount"><option value="10">10 题</option><option value="20" selected>20 题</option><option value="30">30 题</option><option value="50">50 题</option></select>
-            <select id="examMinutes"><option value="15">15 分钟</option><option value="30" selected>30 分钟</option><option value="45">45 分钟</option><option value="60">60 分钟</option></select>
-          </div>
-          <button class="primary-btn" id="btnExamStart">开始模拟测试</button>
-        </div>
-      </div>
-      <!-- 答题视图 -->
-      <div id="quizRun" class="hidden">
-        <div class="q-top">
-          <button class="q-back" id="quizExitBtn">‹</button>
-          <span id="quizProgressText" style="font-size:13px;color:var(--muted)"></span>
-          <span class="q-timer hidden" id="quizTimer">--:--</span>
-        </div>
-        <div class="q-progress"><i id="quizProgressBar" style="width:0%"></i></div>
-        <div class="card q-card" id="quizQuestionCard"></div>
-        <div class="q-nav">
-          <button class="q-prev" id="quizPrevBtn">上一题</button>
-          <button class="q-next" id="quizNextBtn">下一题</button>
-        </div>
-      </div>
-      <!-- 结果视图 -->
-      <div id="quizResult" class="hidden">
-        <div class="card score-card" id="scoreCard"></div>
-        <div class="card" id="reviewList"></div>
-        <button class="primary-btn" id="quizDoneBtn">返回刷题首页</button>
-      </div>
-    </section>
-
     <!-- ================= 院校库 ================= -->
     <section class="page" id="page-college">
       <div id="collegeHome">
         <header class="topbar"><div><h1>院校库</h1><p class="sub" id="collegeCount"></p></div></header>
-        <div class="card">
+        <div class="card" id="favCard">
+          <div class="card-head"><h2>⭐ 我的目标院校</h2></div>
+          <div id="favList"></div>
+        </div>
+        <details class="fmt" id="allCollegeBox">
+          <summary>🔍 检索全部院校 · <span id="collegeFilteredCount">0</span> 所（点开搜索）</summary>
           <input type="search" id="collegeSearch" class="search-input" placeholder="搜索院校名称，如：南京大学">
           <div class="chip-row" id="collegeTags" style="justify-content:flex-start;margin-top:10px;margin-bottom:0"></div>
           <div class="prov-chips" id="collegeProvs"></div>
-        </div>
-        <div class="card hidden" id="favCard">
-          <div class="card-head"><h2>我的目标院校</h2></div>
-          <div id="favList"></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><h2>全部院校</h2><span id="collegeFilteredCount"></span></div>
-          <div id="collegeList"></div>
-        </div>
+          <div id="collegeList" style="margin-top:10px"></div>
+        </details>
         <p style="font-size:11px;color:#B7BFCE;text-align:center;margin-top:10px">数据仅供参考 · 招生专业、分数线、简章请以研招网及院校官方发布为准</p>
       </div>
       <div id="collegeDetail" class="hidden">
@@ -418,49 +479,59 @@ textarea.note-input{height:84px;resize:vertical}
 
     <!-- ================= 我的 ================= -->
     <section class="page" id="page-mine">
-      <header class="topbar"><div><h1>我的</h1><p class="sub">数据统计 · 题库管理 · 备份</p></div></header>
+      <header class="topbar"><div><h1>我的</h1><p class="sub">数据统计 · 云同步 · 备份</p></div></header>
       <div class="card">
         <div class="card-head"><h2>学习统计</h2></div>
         <div class="mine-row" style="border-top:none"><span>累计学习时长</span><b id="msDuration">0 分钟</b></div>
-        <div class="mine-row"><span>累计刷题</span><b id="msAnswered">0 题</b></div>
-        <div class="mine-row"><span>模拟测试</span><b id="msExams">0 次</b></div>
+        <div class="mine-row"><span>累计专注</span><b id="msExams">0 轮</b></div>
         <div class="mine-row"><span>累计打卡</span><b id="msCheckins">0 天</b></div>
-        <div class="mine-row"><span>错题本</span><b id="msWrong">0 题</b></div>
         <div class="mine-row"><span>目标院校</span><b id="msFavs">0 所</b></div>
       </div>
       <div class="card">
-        <div class="card-head"><h2>题库管理</h2><span id="bankCountText"></span></div>
-        <div class="mine-btns">
-          <button class="mine-btn" id="btnImportFile">导入题库 JSON 文件<small>支持 {meta, questions} 或纯题组数组</small></button>
-          <textarea class="import-box" id="importBox" placeholder="也可以把题库 JSON 直接粘贴到这里…"></textarea>
-          <button class="mine-btn" id="btnImportPaste">解析并导入上方粘贴的内容</button>
-          <a class="mine-btn" id="btnSample" href="./questions.json" download style="text-decoration:none">下载示例题库<small>按示例格式整理真题即可批量导入</small></a>
+        <div class="card-head"><h2>☁️ 云端同步</h2><span id="cloudStatus"></span></div>
+        <input class="note-input" id="cloudToken" placeholder="GitHub Token（gist 权限的个人令牌）" style="margin-top:0">
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+          <input class="note-input" id="cloudGid" placeholder="云端库 ID（首次点「创建云端库」自动生成）" style="flex:1;margin-top:0">
+          <button class="mini-btn" id="cloudCreate">创建云端库</button>
         </div>
-        <details class="fmt">
-          <summary>题库 JSON 格式说明</summary>
-          <pre>{
-  "meta": { "subject": "数学", "year": 2025 },
-  "questions": [
-    {
-      "id": "m2025-01",          // 可省略，自动生成
-      "type": "single",          // single单选 / multi多选 / judge判断
-      "chapter": "高数",          // 章节，可省略
-      "stem": "题干内容",
-      "options": ["A选项","B","C","D"],
-      "answer": 0,               // 单选/判断填下标0起；多选填数组如 [0,2]
-      "explain": "解析文字",
-      "source": "2025 真题"       // 来源，可省略
-    }
-  ]
-}</pre>
-        </details>
+        <div class="mine-btns" style="margin-top:10px">
+          <button class="mine-btn" id="cloudUp">上传到云端<small>把当前全部数据推送到你的私有 Gist</small></button>
+          <button class="mine-btn" id="cloudDown">从云端恢复<small>拉取云端备份覆盖本地（浏览器清数据后用它找回）</small></button>
+        </div>
+        <div class="silent-row">
+          <div class="silent-label">⚡ 自动同步<small>数据变化后自动上传 · 打开应用时自动拉取最新备份</small></div>
+          <label class="switch"><input type="checkbox" id="cloudAuto"><span class="slider"></span></label>
+        </div>
+        <p style="font-size:11px;color:#B7BFCE;margin-top:8px">Token 相当于钥匙，请勿泄露给他人。云端备份存在你自己的 GitHub 私有 Gist 中。</p>
       </div>
       <div class="card">
         <div class="card-head"><h2>数据备份</h2></div>
         <div class="mine-btns">
-          <button class="mine-btn" id="btnExport">导出全部数据备份<small>计划/打卡/时长/题库/错题/成绩 一次性导出</small></button>
+          <button class="mine-btn" id="btnExport">导出全部数据备份<small>计划/打卡/时长/院校笔记/汇报 一次性导出</small></button>
           <button class="mine-btn" id="btnRestore">从备份文件恢复<small>会覆盖当前所有数据，请谨慎操作</small></button>
           <input type="file" id="restoreFile" accept=".json,application/json" class="hidden">
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>📝 月度汇报</h2><span id="reportMonth"></span></div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px">每月最后一天填写。周均时长由应用根据本月记录自动计算。</p>
+        <div class="report-grid">
+          <label>数学进度<input type="number" id="rpMath" min="0" max="100" placeholder="%"></label>
+          <label>专业课进度<input type="number" id="rpMajor" min="0" max="100" placeholder="%"></label>
+          <label>英语进度<input type="number" id="rpEng" min="0" max="100" placeholder="%"></label>
+        </div>
+        <div class="report-grid">
+          <label>模考·数学<input type="text" id="rpExM" placeholder="如 98"></label>
+          <label>模考·英语<input type="text" id="rpExE" placeholder="无则填无"></label>
+          <label>模考·普物<input type="text" id="rpExP" placeholder="无则填无"></label>
+        </div>
+        <textarea class="note-input" id="rpBlocker" placeholder="本月卡点（必填）"></textarea>
+        <textarea class="note-input" id="rpAdjust" placeholder="下月是否调整计划"></textarea>
+        <p style="font-size:12px;color:var(--muted);margin:10px 0 0">本月周均学习时长：<b id="rpHours" style="color:var(--primary)">--</b>（计划 37.5h）</p>
+        <p style="font-size:11px;color:#B7BFCE;margin:6px 0 0" id="rpOutlineRef"></p>
+        <div class="mine-btns" style="margin-top:10px">
+          <button class="mine-btn" id="rpSave">保存本月汇报<small>同月重复保存则覆盖</small></button>
+          <button class="mine-btn" id="rpCopy">复制汇报文本<small>粘贴到备忘录或发给监督人</small></button>
         </div>
       </div>
       <div class="card">
@@ -469,7 +540,7 @@ textarea.note-input{height:84px;resize:vertical}
           <button class="mine-btn warn" id="btnClear">清空全部数据<small>不可恢复，建议先导出备份</small></button>
         </div>
       </div>
-      <p style="text-align:center;font-size:11px;color:#B7BFCE;margin-top:12px">考研助手 v1.8 · 数据保存在本机</p>
+      <p style="text-align:center;font-size:11px;color:#B7BFCE;margin-top:12px">考研助手 v2.6 · 作战方案版</p>
     </section>
   </main>
 
@@ -480,9 +551,6 @@ textarea.note-input{height:84px;resize:vertical}
     </button>
     <button class="tab" data-page="page-plan">
       <svg viewBox="0 0 24 24"><path d="M5 4h14a1 1 0 011 1v15a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1zm2 4v2h10V8H7zm0 4v2h10v-2H7zm0 4v2h7v-2H7z"/></svg>计划
-    </button>
-    <button class="tab" data-page="page-quiz">
-      <svg viewBox="0 0 24 24"><path d="M6 2h12a1 1 0 011 1v18a1 1 0 01-1 1H6a1 1 0 01-1-1V3a1 1 0 011-1zm3 5v2h8V7H9zm0 4v2h8v-2H9zm0 4v2h5v-2H9z"/></svg>刷题
     </button>
     <button class="tab" data-page="page-college">
       <svg viewBox="0 0 24 24"><path d="M12 3 1 8l11 5 9-4.09V15h2V8L12 3zM5 12.66V16c0 1.66 3.13 3 7 3s7-1.34 7-3v-3.34l-7 3.18-7-3.18z"/></svg>院校
@@ -522,7 +590,6 @@ const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtMin = sec => { const m=Math.round(sec/60); if(m<60) return m+'分钟'; return Math.floor(m/60)+'小时'+(m%60||'')+'分钟'; };
 const fmtClock = s => pad(Math.floor(s/60))+':'+pad(Math.floor(s%60));
-const shuffle = arr => { const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
 const WEEK = ['日','一','二','三','四','五','六'];
 let toastTimer = null;
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2200); }
@@ -544,7 +611,7 @@ function beep(times){
     }
   }catch(e){}
 }
-const SUBJECT_COLORS = {'政治':'#F5A623','英语':'#34C77B','数学':'#4F6EF7','专业课':'#9B6EF3'};
+const SUBJECT_COLORS = {'政治':'#F5A623','英语':'#34C77B','英语二':'#34C77B','数学':'#4F6EF7','数学二':'#4F6EF7','专业课':'#9B6EF3','大学课程':'#3BB8C7'};
 const FALLBACK_COLORS = ['#5B8DEF','#34C77B','#F5A623','#9B6EF3','#F0506E','#3BB8C7'];
 function subjectColor(sub){
   if(SUBJECT_COLORS[sub]) return SUBJECT_COLORS[sub];
@@ -563,26 +630,33 @@ const DB = {
     this.migrate();
   },
   save(){
+    this.data.meta={updatedAt:Date.now()};
     try{ localStorage.setItem(this.key, JSON.stringify(this.data)); }
     catch(e){ toast('保存失败：本地存储空间不足'); }
+    if(typeof Cloud!=='undefined') Cloud.auto(); // 触发云端自动同步
   },
   migrate(){
     const d=this.data;
     d.plans=d.plans||[]; d.checkins=d.checkins||{}; d.sessions=d.sessions||[];
-    d.questions=d.questions||[]; d.wrongBook=d.wrongBook||{}; d.exams=d.exams||[]; d.collegeNotes=d.collegeNotes||{};
+    d.questions=d.questions||[]; d.wrongBook=d.wrongBook||{}; d.exams=d.exams||[]; d.collegeNotes=d.collegeNotes||{}; d.schedule=d.schedule||[];
+    d.reports=d.reports||[]; d.milestoneDone=d.milestoneDone||{}; d.outlines=d.outlines||{};
+    if(d.schedule.length&&!d.settings.scheduleWeekday) d.settings.scheduleWeekday=d.schedule; // 旧版单作息迁移为工作日作息
     d.answered=d.answered||0; d.correct=d.correct||0;
-    d.settings=Object.assign({examDate:'2027-12-25', pomodoroMin:25, pomodoroSubject:'物理光学'}, d.settings||{});
+    d.settings=Object.assign({examDate:'2027-12-25', pomodoroMin:25, breakMin:5, pomodoroSubject:'物理光学'}, d.settings||{});
     if(d.settings.examDate==='2026-12-19') d.settings.examDate='2027-12-25'; // 27考研旧默认值迁移为28考研
     // 光电专业科目迁移：旧示例科目 → 数二/英二/物理光学
-    const SUB_RENAME={'英语':'英语二','英语一':'英语二','数学':'数学二','数学一':'数学二','数学三':'数学二','专业课':'物理光学'};
+    const SUB_RENAME={'英语':'英语二','英语一':'英语二','数学':'数学二','数学一':'数学二','数学三':'数学二','物理光学':'专业课'};
     const rs=s=>SUB_RENAME[s]||s;
     d.plans.forEach(p=>{ p.subject=rs(p.subject); });
     d.sessions.forEach(s=>{ s.subject=rs(s.subject); });
     d.questions.forEach(q=>{ q.subject=rs(q.subject); });
     d.settings.pomodoroSubject=rs(d.settings.pomodoroSubject);
+    (d.settings.scheduleWeekday||[]).forEach(s=>{ s.subject=rs(s.subject); });
+    (d.settings.scheduleWeekend||[]).forEach(s=>{ s.subject=rs(s.subject); });
     // 默认目标院校（首次使用自动收藏；手动取消收藏后不会被重复加回）
     ['南昌大学','安徽大学'].forEach(name=>{
       if(!d.collegeNotes[name]) d.collegeNotes[name]={fav:true,major:'',note:''};
+      if(!d.collegeNotes[name].major) d.collegeNotes[name].major='085408 光电信息工程';
     });
   },
   seed(){
@@ -621,7 +695,7 @@ const DB = {
     };
   },
   subjects(){
-    const set=new Set(['政治','英语二','数学二','物理光学']);
+    const set=new Set(['政治','英语二','数学二','专业课','大学课程']);
     this.data.questions.forEach(q=>{ if(q.subject) set.add(q.subject); });
     return [...set];
   },
@@ -656,8 +730,7 @@ function switchPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id===id));
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.page===id));
   if(id==='page-home') renderHome();
-  if(id==='page-plan') Plan.render();
-  if(id==='page-quiz') Quiz.renderHome();
+  if(id==='page-plan'){ Plan.render(); Sched.render(); Mile.render(); Outline.render(); }
   if(id==='page-college'){ College.render(); $('#collegeHome').classList.remove('hidden'); $('#collegeDetail').classList.add('hidden'); }
   if(id==='page-mine') renderMine();
   window.scrollTo(0,0);
@@ -679,8 +752,11 @@ function renderHome(){
   // 统计
   $('#stStreak').textContent = DB.streak();
   $('#stToday').textContent = Math.round(DB.durationOn(todayStr())/60)+'分';
-  $('#stAnswered').textContent = d.answered;
-  const acc=DB.accuracy(); $('#stAccuracy').textContent = acc==null?'--':acc+'%';
+  $('#stFocus').textContent = (d.sessions||[]).length;
+  $('#stFav').textContent = favs.length;
+
+  // 当前作战阶段
+  Stage.render();
 
   // 今日任务
   const plans=d.plans.filter(p=>p.date===todayStr());
@@ -698,7 +774,6 @@ function renderHome(){
   // 最近学习（时长记录 + 测试成绩 混合，按时间倒序取 5 条）
   const items=[];
   d.sessions.slice(-8).forEach(s=>items.push({ic:'⏱',t:`${esc(s.subject)} 专注 ${Math.round(s.seconds/60)} 分钟`,sub:s.date}));
-  d.exams.slice(-5).forEach(e=>items.push({ic:'📝',t:`模拟测试 ${e.correct}/${e.total} 分`,sub:e.date}));
   $('#recentList').innerHTML = items.length
     ? items.slice(-5).reverse().map(it=>`<div class="recent-item"><span class="ric">${it.ic}</span><span class="rt">${it.t}<small>${it.sub}</small></span></div>`).join('')
     : '<div class="empty">暂无学习记录，开始第一次专注吧</div>';
@@ -791,15 +866,18 @@ $('#checkinBtn').addEventListener('click',()=>{
 
 // ================= 6. 番茄钟模块 =================
 const Pomo = {
-  state:'idle',            // idle | running | paused
+  state:'idle',            // idle | running | paused | break
   acc:0,                   // 已累计秒数（暂停时冻结）
   startTs:0,               // 本轮开始时间戳
+  bAcc:0, bTs:0, bTotal:0, // 休息计时
   subject:'数学',
   timerId:null,
   elapsed(){
     return this.state==='running' ? this.acc + (Date.now()-this.startTs)/1000 : this.acc;
   },
   total(){ return DB.data.settings.pomodoroMin*60; },
+  elapsedB(){ return this.state==='break' ? this.bAcc + (Date.now()-this.bTs)/1000 : this.bAcc; },
+  breakTotal(){ return (DB.data.settings.breakMin||0)*60; },
   renderChips(){
     const subs=DB.subjects();
     this.subject=DB.data.settings.pomodoroSubject;
@@ -807,30 +885,82 @@ const Pomo = {
     $('#pomoSubjectChips').innerHTML = subs.map(s=>`<button class="chip ${s===this.subject?'sel':''}" data-sub="${esc(s)}">${esc(s)}</button>`).join('');
     document.querySelectorAll('#pomoSubjectChips .chip').forEach(b=>{
       b.addEventListener('click',()=>{
-        if(this.state!=='idle'){ toast('专注进行中，不能切换科目'); return; }
+        if(this.state==='running'||this.state==='paused'){ toast('专注进行中，不能切换科目'); return; }
         this.subject=b.dataset.sub; DB.data.settings.pomodoroSubject=this.subject; DB.save(); this.renderChips();
       });
     });
   },
+  renderDur(){
+    const m=DB.data.settings.pomodoroMin;
+    const base=[25,45,60,90];
+    const list=base.includes(m)?base.slice():[...base,m].sort((a,b)=>a-b);
+    $('#pomoDurChips').innerHTML=list.map(v=>`<button class="chip ${v===m?'sel':''}" data-min="${v}">${v}分</button>`).join('')+'<button class="chip" data-min="c">✎ 自定义</button>';
+    document.querySelectorAll('#pomoDurChips .chip').forEach(b=>b.addEventListener('click',()=>{
+      const v=b.dataset.min;
+      if(v==='c'){
+        const inp=prompt('自定义专注分钟数（1–180）：', DB.data.settings.pomodoroMin);
+        if(inp===null) return;
+        const n=parseInt(inp,10);
+        if(!n||n<1||n>180){ toast('请输入 1–180 的整数'); return; }
+        DB.data.settings.pomodoroMin=n; DB.save(); this.renderDur(); this.render();
+        toast('专注时长已设为 '+n+' 分钟');
+        return;
+      }
+      const n=+v;
+      if(n===DB.data.settings.pomodoroMin) return;
+      if(this.state==='running'||this.state==='paused'){ toast('专注进行中，不能修改时长'); return; }
+      DB.data.settings.pomodoroMin=n; DB.save(); this.renderDur(); this.render();
+    }));
+  },
+  renderBreak(){
+    const b=DB.data.settings.breakMin||0;
+    const base=[5,10,15];
+    const list=b>0?(base.includes(b)?base.slice():[...base,b].sort((x,y)=>x-y)):base;
+    $('#pomoBreakChips').innerHTML=list.map(v=>`<button class="chip ${v===b?'sel':''}" data-min="${v}">${v}分</button>`).join('')+`<button class="chip" data-min="c">✎</button><button class="chip ${b===0?'sel':''}" data-min="0">关闭</button>`;
+    document.querySelectorAll('#pomoBreakChips .chip').forEach(el=>el.addEventListener('click',()=>{
+      const v=el.dataset.min;
+      if(v==='c'){
+        const inp=prompt('自定义休息分钟数（1–60）：', b||10);
+        if(inp===null) return;
+        const n=parseInt(inp,10);
+        if(!n||n<1||n>60){ toast('请输入 1–60 的整数'); return; }
+        DB.data.settings.breakMin=n; DB.save(); this.renderBreak();
+        toast('休息时长已设为 '+n+' 分钟');
+        return;
+      }
+      const n=+v;
+      if(n===b) return;
+      if(this.state==='running'||this.state==='paused'){ toast('专注进行中，不能修改休息时长'); return; }
+      DB.data.settings.breakMin=n; DB.save(); this.renderBreak();
+      if(n===0) toast('休息已关闭：专注结束直接待命');
+      else toast('休息时长已设为 '+n+' 分钟');
+    }));
+  },
   render(){
     const C=2*Math.PI*74, ring=$('#pomoRing');
     ring.style.strokeDasharray=C;
-    const remain=Math.max(0,this.total()-this.elapsed());
+    let remain, tot;
+    if(this.state==='break'){ tot=Math.max(1,this.bTotal); remain=Math.max(0,tot-this.elapsedB()); }
+    else{ tot=this.total(); remain=Math.max(0,tot-this.elapsed()); }
     $('#pomoTime').textContent=fmtClock(Math.ceil(remain));
-    ring.style.strokeDashoffset=C*(remain/this.total());
-    $('#pomoStateText').textContent = this.state==='idle'
-      ? '专注 '+DB.data.settings.pomodoroMin+' 分钟'
+    ring.style.strokeDashoffset=C*(remain/tot);
+    $('#pomoStateText').textContent = this.state==='break' ? '休息中 · '+Math.round(this.bTotal/60)+' 分钟'
+      : this.state==='idle' ? '专注 '+DB.data.settings.pomodoroMin+' 分钟'
       : (this.state==='running'?'专注中 · '+this.subject:'已暂停 · '+this.subject);
     const main=$('#pomoMainBtn');
-    main.textContent = this.state==='running'?'暂停':(this.state==='paused'?'继续':'开始专注');
+    main.textContent = this.state==='running'?'暂停':(this.state==='paused'?'继续':(this.state==='break'?'跳过休息':'开始专注'));
     main.classList.toggle('paused', this.state==='paused');
-    $('#pomoHint').textContent = this.state==='idle'?'准备开始':(this.state==='running'?'保持专注':'休息一下');
-    if(this.state==='running' && !this.timerId){
-      this.timerId=setInterval(()=>{ if(this.state!=='running'){ return; } this.render(); if(this.elapsed()>=this.total()) this.finish(true); },300);
+    $('#pomoHint').textContent = this.state==='break'?'离开座位，别刷短视频':this.state==='idle'?'准备开始':(this.state==='running'?'保持专注':'休息一下');
+    if((this.state==='running'||this.state==='break') && !this.timerId){
+      this.timerId=setInterval(()=>{
+        if(this.state==='running'){ this.render(); if(this.elapsed()>=this.total()) this.finish(true); }
+        else if(this.state==='break'){ this.render(); if(this.elapsedB()>=this.bTotal) this.finishBreak(); }
+      },300);
     }
-    if(this.state!=='running' && this.timerId){ clearInterval(this.timerId); this.timerId=null; }
+    if(this.state!=='running'&&this.state!=='break' && this.timerId){ clearInterval(this.timerId); this.timerId=null; }
   },
   toggle(){
+    if(this.state==='break'){ this.skipBreak(); return; }
     if(this.state==='idle'){
       this.acc=0; this.startTs=Date.now(); this.state='running';
       // 借助用户点击手势初始化音频通道与通知授权（到时才能响铃/推送）
@@ -843,6 +973,7 @@ const Pomo = {
     this.render();
   },
   reset(){
+    if(this.state==='break'){ this.state='idle'; this.bAcc=0; this.render(); return; }
     // 未完成的专注：已超过 1 分钟则按实际分钟记入时长
     const el=this.elapsed();
     if(el>=60){ DB.addSession(this.subject, el, 'pomodoro'); toast('已记录 '+Math.floor(el/60)+' 分钟专注时长'); }
@@ -861,8 +992,31 @@ const Pomo = {
         beep(3);   // 铃声三响
         if(navigator.vibrate) navigator.vibrate([300,150,300,150,600]);  // 长震动节奏
       }
+      // 自动进入休息倒计时
+      if(DB.data.settings.breakMin>0){
+        this.bAcc=0; this.bTs=Date.now(); this.bTotal=this.breakTotal();
+        this.state='break';
+        toast('☕ 休息 '+DB.data.settings.breakMin+' 分钟，离开座位活动一下');
+      }
     }
     this.render(); renderHome();
+  },
+  skipBreak(){
+    this.state='idle'; this.bAcc=0;
+    this.render();
+    toast('休息已跳过，随时开始下一轮专注');
+  },
+  finishBreak(){
+    this.state='idle'; this.bAcc=0;
+    toast('☕ 休息结束，准备好下一轮专注了吗？');
+    if(!DB.data.settings.silentMode){
+      beep(2);
+      if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    }
+    if(window.Notification && Notification.permission==='granted'){
+      try{ new Notification('☕ 休息结束', {body:'开始下一轮专注吧！'}); }catch(e){}
+    }
+    this.render();
   }
 };
 $('#pomoMainBtn').addEventListener('click',()=>Pomo.toggle());
@@ -872,240 +1026,283 @@ $('#pomoSilent').addEventListener('change',function(){
 });
 $('#pomoResetBtn').addEventListener('click',()=>Pomo.reset());
 
-// ================= 7. 刷题引擎 =================
-const Quiz = {
-  filterSubject:'全部',
-  state:null,   // {mode,list,idx,answers,judged,startTs,limitMs,timerId}
-  // ---- 入口视图 ----
-  renderHome(){
-    const qs=DB.data.questions, wrongIds=Object.keys(DB.data.wrongBook);
-    $('#bankSummary').textContent='题库共 '+qs.length+' 题 · 错题 '+wrongIds.length+' 道';
-    $('#wrongCount').textContent=wrongIds.length+' 道错题';
-    const subs=['全部'].concat(DB.subjects());
-    if(!subs.includes(this.filterSubject)) this.filterSubject='全部';
-    $('#subjectChips').innerHTML = subs.map(s=>`<button class="chip ${s===this.filterSubject?'sel':''}" data-sub="${esc(s)}">${esc(s)}</button>`).join('');
-    document.querySelectorAll('#subjectChips .chip').forEach(b=>b.addEventListener('click',()=>{ this.filterSubject=b.dataset.sub; this.renderHome(); }));
+// ================= 6.5 作息时间表模块 =================
+const Sched={
+  variant:(new Date().getDay()===0||new Date().getDay()===6)?'weekend':'weekday',
+  get list(){ const s=DB.data.settings; return (this.variant==='weekend'?s.scheduleWeekend:s.scheduleWeekday)||[]; },
+  setVariant(v){
+    this.variant=v;
+    $('#tabWeekday').classList.toggle('ghost',v!=='weekday');
+    $('#tabWeekend').classList.toggle('ghost',v!=='weekend');
+    this.render();
+    if($('#schedDetails').open) $('#schedBox').value=this.serialize(this.list);
   },
-  pool(){
-    const qs=DB.data.questions;
-    return this.filterSubject==='全部' ? qs : qs.filter(q=>q.subject===this.filterSubject);
-  },
-  // ---- 开始 ----
-  startPractice(random, wrongOnly){
-    let list=this.pool();
-    if(wrongOnly){
-      const wb=DB.data.wrongBook;
-      list=list.filter(q=>wb[q.id]);
-      if(!list.length){ toast('错题本是空的，先去刷几道题吧'); return; }
-    }
-    if(!list.length){ toast('当前筛选下题库为空'); return; }
-    if(random) list=shuffle(list);
-    this.begin({mode:'practice', list:list.slice(0,50)});
-  },
-  startExam(){
-    const count=parseInt($('#examCount').value,10);
-    const minutes=parseInt($('#examMinutes').value,10);
-    let pool=this.pool();
-    if(pool.length<3){ toast('题库题目太少，无法组卷'); return; }
-    const list=shuffle(pool).slice(0,Math.min(count,pool.length));
-    this.begin({mode:'exam', list, limitMs:minutes*60000});
-  },
-  begin(st){
-    st.idx=0; st.answers={}; st.judged={}; st.startTs=Date.now();
-    this.state=st;
-    $('#quizHome').classList.add('hidden');
-    $('#quizResult').classList.add('hidden');
-    $('#quizRun').classList.remove('hidden');
-    $('#quizTimer').classList.toggle('hidden', st.mode!=='exam');
-    if(st.mode==='exam'){
-      st.endTs=Date.now()+st.limitMs;
-      st.timerId=setInterval(()=>{
-        const left=st.endTs-Date.now();
-        if(left<=0){ toast('时间到，自动交卷'); this.submitExam(); return; }
-        $('#quizTimer').textContent=fmtClock(left/1000);
-      },500);
-      $('#quizTimer').textContent=fmtClock(st.limitMs/1000);
-    }
-    this.renderQuestion();
-  },
-  // ---- 单题渲染 ----
-  renderQuestion(){
-    const st=this.state; if(!st) return;
-    const q=st.list[st.idx], n=st.list.length;
-    $('#quizProgressText').textContent=(st.idx+1)+' / '+n+(st.mode==='exam'?' · 模拟测试':'');
-    $('#quizProgressBar').style.width=((st.idx+1)/n*100)+'%';
-
-    const typeName={single:'单选题',multi:'多选题',judge:'判断题'}[q.type]||'单选题';
-    const opts=q.type==='judge'?['正确','错误']:(q.options||[]);
-    const picked=st.answers[st.idx]||[];
-    const judged=!!st.judged[st.idx];
-    const answerArr=Array.isArray(q.answer)?q.answer:[q.answer];
-
-    let html=`<span class="q-type">${typeName}${q.source?' · '+esc(q.source):''}${q.chapter?' · '+esc(q.chapter):''}</span>`;
-    html+=`<div class="q-stem">${esc(q.stem)}</div>`;
-    opts.forEach((op,i)=>{
-      let cls='';
-      if(judged){
-        if(answerArr.includes(i)) cls='correct';
-        else if(picked.includes(i)) cls='wrong';
-      }else if(picked.includes(i)) cls='sel';
-      html+=`<button class="opt ${cls}" data-i="${i}" ${judged?'disabled':''}><span class="ol">${'ABCDEFG'[i]}</span><span>${esc(op)}</span></button>`;
+  parse(text){
+    const out=[];
+    String(text||'').split(/\n+/).forEach(line=>{
+      line=line.trim(); if(!line) return;
+      const m=line.match(/^(\d{1,2})[:：点](半|\d{1,2})?(?:\s*[—–\-－~～到至]\s*(\d{1,2})[:：点](半|\d{1,2})?)?\s*(.+)$/);
+      if(!m) return;
+      const t=(h,mi)=>{ h=+h; mi=(mi==='半')?'30':(mi===undefined?'0':mi); if(h>23||+mi>59||+mi<0) return null; return ('0'+h).slice(-2)+':'+('0'+(+mi)).slice(-2); };
+      const s=t(m[1],m[2]); if(!s) return;
+      let e='';
+      if(m[3]!==undefined){ e=t(m[3],m[4]); if(!e) return; if(e<=s) return; } // 结束时间必须晚于开始时间
+      let label=m[5].trim(), subject='';
+      const sm=label.match(/【(.+?)】/);
+      if(sm){ subject=sm[1].trim(); label=label.replace(/【.+?】/g,'').trim(); }
+      if(!label) return;
+      out.push({start:s,end:e,label,subject});
     });
-    if(judged){
-      const ok=answerArr.slice().sort().join()===picked.slice().sort().join();
-      html+=`<div class="explain"><b>${ok?'✓ 回答正确':'✗ 回答错误 · 正确答案 '+'ABCDEFG'[answerArr[0]]+(answerArr.length>1?'（'+answerArr.map(a=>'ABCDEFG'[a]).join('')+'）':'')}</b>${esc(q.explain||'暂无解析')}</div>`;
-    }
-    $('#quizQuestionCard').innerHTML=html;
-
-    if(!judged){
-      document.querySelectorAll('#quizQuestionCard .opt').forEach(btn=>{
-        btn.addEventListener('click',()=>this.pick(parseInt(btn.dataset.i,10)));
-      });
-    }
-    // 底部按钮
-    $('#quizPrevBtn').disabled = st.idx===0;
-    $('#quizPrevBtn').style.opacity = st.idx===0?.4:1;
-    const next=$('#quizNextBtn');
-    if(st.mode==='practice'){
-      next.textContent = judged?(st.idx===n-1?'完成练习':'下一题'):'确认答案';
-      next.classList.toggle('confirm', !judged);
-    }else{
-      next.textContent = st.idx===n-1?'交卷':'下一题';
-      next.classList.remove('confirm');
-    }
+    out.sort((a,b)=>a.start.localeCompare(b.start));
+    return out;
   },
-  pick(i){
-    const st=this.state, q=st.list[st.idx];
-    if(st.judged[st.idx]) return;
-    const cur=st.answers[st.idx]||[];
-    if(q.type==='multi'){
-      const p=cur.indexOf(i);
-      if(p>=0) cur.splice(p,1); else cur.push(i);
-      st.answers[st.idx]=cur;
-    }else{
-      st.answers[st.idx]=[i];
-    }
-    this.renderQuestion();
-    // 单选/判断：选中即自动判定
-    if(q.type!=='multi') this.confirm();
+  serialize(list){ return (list||[]).map(s=>s.start+(s.end?'-'+s.end:'')+' '+s.label+(s.subject?'【'+s.subject+'】':'')).join('\n'); },
+  toMin(t){ const p=t.split(':'); return +p[0]*60+ +p[1]; },
+  nowSlot(list){
+    const n=new Date(), now=n.getHours()*60+n.getMinutes();
+    return (list||[]).find(s=>{ const st=this.toMin(s.start), en=s.end?this.toMin(s.end):st+30; return now>=st&&now<en; })||null;
   },
-  confirm(){
-    const st=this.state, q=st.list[st.idx];
-    const picked=st.answers[st.idx]||[];
-    if(!picked.length){ toast('请先选择答案'); return; }
-    st.judged[st.idx]=true;
-    const answerArr=(Array.isArray(q.answer)?q.answer:[q.answer]).slice().sort();
-    const ok=answerArr.join()===picked.slice().sort().join();
-    DB.data.answered++;
-    if(ok) DB.data.correct++;
-    else{
-      DB.data.wrongBook[q.id]={count:(DB.data.wrongBook[q.id]&&DB.data.wrongBook[q.id].count||0)+1,lastWrong:todayStr()};
-    }
-    // 错题重做模式：答对自动移出错题本
-    if(ok && st.mode==='wrong') delete DB.data.wrongBook[q.id];
-    DB.save();
-    this.renderQuestion();
-    if(ok) toast('回答正确！');
-    else toast('答错了，已加入错题本');
-  },
-  next(){
-    const st=this.state;
-    if(st.mode==='practice'){
-      if(!st.judged[st.idx]){ this.confirm(); return; }
-      if(st.idx===st.list.length-1){ this.showPracticeResult(); return; }
-      st.idx++;
-    }else{
-      if(st.idx===st.list.length-1){ this.submitExam(); return; }
-      st.idx++;
-    }
-    this.renderQuestion();
-    window.scrollTo(0,0);
-  },
-  prev(){
-    const st=this.state;
-    if(st.idx>0){ st.idx--; this.renderQuestion(); }
-  },
-  // ---- 练习结果 ----
-  showPracticeResult(){
-    const st=this.state;
-    const done=st.list.filter((q,i)=>st.judged[i]).length;
-    const okCount=st.list.filter((q,i)=>{
-      if(!st.judged[i]) return false;
-      const a=(Array.isArray(q.answer)?q.answer:[q.answer]).slice().sort().join();
-      return a===(st.answers[i]||[]).slice().sort().join();
-    }).length;
-    this.clearTimer();
-    $('#quizRun').classList.add('hidden');
-    $('#quizResult').classList.remove('hidden');
-    $('#scoreCard').innerHTML=`
-      <div class="score-num">${okCount}<small style="font-size:20px;color:var(--muted)">/${done}</small></div>
-      <p>练习完成 · 正确率 ${done?Math.round(okCount/done*100):0}%</p>`;
-    $('#reviewList').innerHTML=st.list.map((q,i)=>this.reviewItem(q,i,st.judged[i],st.answers[i])).join('');
-  },
-  // ---- 考试交卷 ----
-  submitExam(){
-    const st=this.state; if(!st||st.mode!=='exam') return;
-    this.clearTimer();
-    let okCount=0;
-    st.list.forEach((q,i)=>{
-      const picked=st.answers[i]||[];
-      const a=(Array.isArray(q.answer)?q.answer:[q.answer]).slice().sort().join();
-      const ok=!!picked.length && a===picked.slice().sort().join();
-      if(ok) okCount++;
-      else DB.data.wrongBook[q.id]={count:(DB.data.wrongBook[q.id]&&DB.data.wrongBook[q.id].count||0)+1,lastWrong:todayStr()};
-      if(picked.length){ DB.data.answered++; if(ok) DB.data.correct++; }
-    });
-    const dur=Math.round((Date.now()-st.startTs)/1000);
-    const score=Math.round(okCount/st.list.length*100);
-    DB.data.exams.push({id:uid(), date:todayStr(), title:'模拟测试', total:st.list.length, correct:okCount, durationSec:dur, subject:this.filterSubject});
-    DB.save();
-    st.mode='examDone';
-    $('#quizRun').classList.add('hidden');
-    $('#quizResult').classList.remove('hidden');
-    $('#scoreCard').innerHTML=`
-      <div class="score-num">${score}<small style="font-size:22px;color:var(--muted)">分</small></div>
-      <p>答对 ${okCount} / ${st.list.length} 题 · 用时 ${fmtClock(dur)}<br>错题已自动加入错题本</p>`;
-    $('#reviewList').innerHTML=st.list.map((q,i)=>{
-      const picked=st.answers[i]||[];
-      const a=(Array.isArray(q.answer)?q.answer:[q.answer]).slice().sort().join();
-      const ok=!!picked.length && a===picked.slice().sort().join();
-      return this.reviewItem(q,i,ok,picked,true);
-    }).join('');
-  },
-  reviewItem(q,i,judgedOk,picked,showPicked){
-    const answerArr=(Array.isArray(q.answer)?q.answer:[q.answer]);
-    const opts=q.type==='judge'?['正确','错误']:(q.options||[]);
-    const your= picked&&picked.length ? picked.map(x=>opts[x]!=null?('ABCDEFG'[x]+' '+opts[x]):'?').join('；') : '未作答';
-    const right=answerArr.map(x=>opts[x]!=null?('ABCDEFG'[x]+' '+opts[x]):'?').join('；');
-    return `<div class="review-item ${judgedOk?'ok':'bad'}">
-      <div class="rv-q"><span class="rv-tag">${judgedOk?'✓':'✗'}</span><span>${(i+1)}. ${esc(q.stem)}</span></div>
-      ${showPicked!==false?`<div class="rv-a">你的答案：${esc(your)}　正确答案：${esc(right)}</div>`:''}
-      ${q.explain?`<div class="rv-e">${esc(q.explain)}</div>`:''}
-    </div>`;
-  },
-  exit(){
-    if(this.state && this.state.mode==='exam' && !this.state.examDone){
-      if(!confirm('模拟测试进行中，确认放弃本次测试？')) return;
-    }
-    this.clearTimer(); this.state=null;
-    $('#quizRun').classList.add('hidden');
-    $('#quizResult').classList.add('hidden');
-    $('#quizHome').classList.remove('hidden');
-    this.renderHome();
-  },
-  clearTimer(){
-    if(this.state&&this.state.timerId){ clearInterval(this.state.timerId); this.state.timerId=null; }
+  render(){
+    const list=this.list;
+    const now=this.nowSlot(list);
+    $('#schedList').innerHTML=list.length?list.map(s=>{
+      const isNow=s===now;
+      return `<div class="sched-item ${isNow?'now':''}">
+        <div class="sched-time">${s.start}${s.end?' - '+s.end:''}</div>
+        <div class="sched-label">${esc(s.label)}${isNow?'<span class="now-badge">当前</span>':''}${s.subject?`<small>${esc(s.subject)}</small>`:''}</div>
+      </div>`;
+    }).join(''):'<div class="empty">还没有作息表 · 点下方「导入作息表」粘贴文本导入</div>';
   }
 };
-// 刷题事件绑定
-$('#btnSeq').addEventListener('click',()=>Quiz.startPractice(false,false));
-$('#btnRand').addEventListener('click',()=>Quiz.startPractice(true,false));
-$('#btnWrong').addEventListener('click',()=>Quiz.startPractice(true,true));
-$('#btnExamStart').addEventListener('click',()=>Quiz.startExam());
-$('#quizPrevBtn').addEventListener('click',()=>Quiz.prev());
-$('#quizNextBtn').addEventListener('click',()=>Quiz.next());
-$('#quizExitBtn').addEventListener('click',()=>Quiz.exit());
-$('#quizDoneBtn').addEventListener('click',()=>Quiz.exit());
+$('#schedImport').addEventListener('click',()=>{
+  const list=Sched.parse($('#schedBox').value);
+  if(!list.length){ toast('没有识别到作息条目，请检查格式'); return; }
+  if(Sched.variant==='weekend') DB.data.settings.scheduleWeekend=list; else DB.data.settings.scheduleWeekday=list;
+  DB.save();
+  Sched.render();
+  toast('已导入 '+(Sched.variant==='weekend'?'周末':'工作日')+'作息 '+list.length+' 条');
+});
+$('#schedDetails').addEventListener('toggle',()=>{
+  if($('#schedDetails').open && !$('#schedBox').value.trim()){
+    $('#schedBox').value=Sched.serialize(Sched.list);
+    $('#schedBox').placeholder='每行一条：07:00-08:00 背单词，可加【科目】后缀';
+  }
+});
+$('#schedToPlan').addEventListener('click',()=>{
+  const list=Sched.list.filter(s=>!/^(起床|睡觉|午休|午睡|早餐|早饭|午饭|午餐|晚饭|晚餐|洗漱|晨练|锻炼|运动|进馆|启动仪式|复盘|休息|上课|打球)$/.test(s.label));
+  if(!list.length){ toast('当前作息表为空，请先导入'); return; }
+  // 去重：同日期已存在相同任务文本的时段不再重复生成
+  const exist=new Set(DB.data.plans.filter(p=>p.date===Plan.selected).map(p=>p.task));
+  const slots=list.map(s=>({s,task:s.label+'（'+s.start+(s.end?'-'+s.end:'')+'）'}));
+  const fresh=slots.filter(o=>!exist.has(o.task));
+  const skipped=slots.length-fresh.length;
+  if(!fresh.length){ toast('该日期的任务已按作息生成过，无新增'); return; }
+  if(!confirm('按'+(Sched.variant==='weekend'?'周末':'工作日')+'作息生成 '+fresh.length+' 条任务'+(skipped>0?('（跳过 '+skipped+' 条重复）'):'')+'？')) return;
+  fresh.forEach(o=>DB.data.plans.push({id:uid(),date:Plan.selected,subject:o.s.subject||'自习',task:o.task,done:false}));
+  DB.save(); Plan.render();
+  toast('已生成 '+fresh.length+' 条任务'+(skipped>0?'，已跳过 '+skipped+' 条重复':''));
+});
+$('#tabWeekday').addEventListener('click',()=>Sched.setVariant('weekday'));
+$('#tabWeekend').addEventListener('click',()=>Sched.setVariant('weekend'));
+
+// ================= 6.6 作战方案模块（阶段 / 里程碑 / 章节地图 / 月度汇报） =================
+const STAGES=[
+  {name:'① 基础期',start:'2026-11-01',end:'2027-02-28',tasks:['数学按数二范围过完第一轮','考研核心词汇第一轮全覆盖（5500 词必须见过）','《普通物理学》教材通读一遍','政治完全不动']},
+  {name:'② 强化期',start:'2027-03-01',end:'2027-06-15',tasks:['数学强化 + 早年真题','英语真题正式启封精刷','普物二轮 + 真题精做','6 月启动政治']},
+  {name:'③ 决策点',start:'2027-06-16',end:'2027-06-30',tasks:['严格计时的全真模考：数学≥100 / 英语≥60 / 普物≥110','据此调整强度；无论怎么调都不换专业课']},
+  {name:'④ 黄金期',start:'2027-07-01',end:'2027-08-31',tasks:['暑假全职窗口，拉到 50–55 小时/周','阶段验收：四科完成「一轮全覆盖 + 二轮强化」']},
+  {name:'⑤ 报名与冲刺',start:'2027-09-01',end:'2027-11-30',tasks:['9 月底查两校推免公示（统考剩余名额情报）','10 月报名：南昌 / 安徽最终定夺','每周至少一套严格计时全真模考']},
+  {name:'⑥ 决胜期',start:'2027-12-01',end:'2027-12-18',tasks:['不再学新东西','错题本回炉 + 政治押题背诵 + 作文模板默写','作息调至与考试时段完全一致']}
+];
+const Stage={
+  render(){
+    const now=todayStr();
+    let cur=STAGES.find(s=>now>=s.start&&now<=s.end)
+      ||(now<STAGES[0].start?STAGES[0]:null)
+      ||(now<=DB.data.settings.examDate?STAGES[STAGES.length-1]:null); // 决胜期结束后到初试前仍显示决胜期
+    if(!cur){ $('#stageDays').textContent=''; $('#stageBody').innerHTML='<div class="empty">初试已结束，祝一战成硕！</div>'; return; }
+    const st=new Date(cur.start+'T00:00:00'), en=new Date(cur.end+'T00:00:00'), n=new Date(todayStr()+'T00:00:00');
+    const pct=Math.min(100,Math.max(0,Math.round((n-st)/(en-st)*100)));
+    const left=Math.ceil((en-n)/86400000);
+    $('#stageDays').textContent='距阶段结束 '+left+' 天';
+    $('#stageBody').innerHTML='<div class="stage-name">'+cur.name+'</div><div class="stage-range">'+cur.start+' ~ '+cur.end+'</div><div class="stage-progress"><i style="width:'+pct+'%"></i></div>'+cur.tasks.map(t=>'<div class="stage-task">'+t+'</div>').join('');
+  }
+};
+const MILESTONES=[
+  {date:'2026-12-31',items:['《普通物理学》光学篇通读完毕，课后题独立完成 ≥ 80%','数学完成「函数极限连续 + 一元函数微分学」，错题本已建立','考研核心词汇第一轮全覆盖','839 历年真题已到手（最重要一项，未到手须立即上报）']},
+  {date:'2027-02-28',items:['数学按数二范围完成第一轮全覆盖','普物力学、电磁学、热学三篇通读完毕','英语词汇进入第二轮']},
+  {date:'2027-06-15',items:['决策点模考完成：数学≥100 / 英语≥60 / 普物≥110','错题本条目数 ≥ 150 条（真实记录，非抄答案）']},
+  {date:'2027-08-31',items:['四科全部完成「一轮全覆盖 + 二轮强化」','政治已完成首轮刷题','累计全真模考 ≥ 4 次']},
+  {date:'2027-10-31',items:['已完成目标院校最终定夺（南昌 / 安徽）','近三年真题全部精做过一轮']}
+];
+const Mile={
+  render(){
+    const done=DB.data.milestoneDone||{};
+    const today=todayStr();
+    const next=MILESTONES.find(m=>m.date>=today&&m.items.some((_,i)=>!done[m.date+'#'+i]));
+    $('#mileNext').textContent=next?('下次验收 '+next.date):'✅ 无未完成项';
+    $('#mileList').innerHTML=MILESTONES.map(m=>{
+      const past=m.date<today;
+      return '<div class="mile-date '+(past?'past':'')+'">'+m.date+(past?'（已过）':'')+'</div>'+m.items.map((t,i)=>{
+        const key=m.date+'#'+i;
+        return '<div class="mile-row '+(done[key]?'done':'')+'" data-key="'+key+'"><button class="plan-check">'+(done[key]?'✓':'')+'</button><span>'+t+'</span></div>';
+      }).join('');
+    }).join('');
+    document.querySelectorAll('#mileList .mile-row').forEach(row=>{
+      row.querySelector('.plan-check').addEventListener('click',()=>{
+        const key=row.dataset.key;
+        if(DB.data.milestoneDone[key]) delete DB.data.milestoneDone[key]; else DB.data.milestoneDone[key]=true;
+        DB.save(); this.render();
+      });
+    });
+  }
+};
+const CHAP=[
+  {p:'第一篇 力学',s:'第 1–3 章 力和运动 / 运动的守恒量 / 刚体和流体',t:'must'},
+  {p:'第一篇 力学',s:'第 4 章 相对论基础',t:'unknown'},
+  {p:'第二篇 热学',s:'第 5–6 章 气体动理论 / 热力学基础',t:'must'},
+  {p:'第三篇 电磁学',s:'第 7–9 章 静电场 / 恒定磁场 / 电磁感应',t:'must'},
+  {p:'第四篇 光学',s:'第 10–11 章 机械振动 / 机械波与电磁波',t:'unknown'},
+  {p:'第四篇 光学',s:'第 12 章 光学（你的强项，建议首个复习）',t:'must'},
+  {p:'第五篇 量子',s:'第 13 章 早期量子论与量子力学基础',t:'skip'}
+];
+const CHAP_TAG={must:['必看','chap-must'],unknown:['待真题确认','chap-unknown'],skip:['大概率不考','chap-skip']};
+function renderChap(){
+  $('#chapMap').innerHTML=CHAP.map(c=>'<div class="chap-row"><span class="chap-p">'+c.p+'</span><span class="chap-s">'+c.s+'</span><span class="chap-tag '+CHAP_TAG[c.t][1]+'">'+CHAP_TAG[c.t][0]+'</span></div>').join('');
+}
+const Report={
+  month(){ const n=new Date(); return n.getFullYear()+'-'+('0'+(n.getMonth()+1)).slice(-2); },
+  monthLabel(){ const n=new Date(); return n.getFullYear()+'年'+(n.getMonth()+1)+'月'; },
+  hours(){
+    const ym=this.month();
+    let sum=0;
+    (DB.data.sessions||[]).forEach(s=>{ if((s.date||'').startsWith(ym)) sum+=s.seconds||0; });
+    return Math.round(sum/3600/Math.max(1,new Date().getDate()/7)*10)/10;
+  },
+  current(){ return (DB.data.reports||[]).find(r=>r.month===this.month()); },
+  render(){
+    $('#reportMonth').textContent=this.monthLabel();
+    $('#rpHours').textContent=this.hours()+'h';
+    const ex=this.current();
+    if(ex){
+      $('#rpMath').value=ex.math||''; $('#rpMajor').value=ex.major||''; $('#rpEng').value=ex.eng||'';
+      $('#rpExM').value=ex.examMath||''; $('#rpExE').value=ex.examEng||''; $('#rpExP').value=ex.examMajor||'';
+      $('#rpBlocker').value=ex.blocker||''; $('#rpAdjust').value=ex.adjust||'';
+    }
+    const ref=Outline.refText();
+    $('#rpOutlineRef').textContent = ref?('提纲参考（手动填写进度时可对照）：'+ref):'';
+  },
+  save(){
+    if(!$('#rpBlocker').value.trim()){ toast('请填写本月卡点'); return; }
+    const rec={month:this.month(),hours:this.hours(),
+      math:$('#rpMath').value,major:$('#rpMajor').value,eng:$('#rpEng').value,
+      examMath:$('#rpExM').value,examEng:$('#rpExE').value,examMajor:$('#rpExP').value,
+      blocker:$('#rpBlocker').value.trim(),adjust:$('#rpAdjust').value.trim(),savedAt:Date.now()};
+    const idx=(DB.data.reports||[]).findIndex(r=>r.month===rec.month);
+    if(idx>=0) DB.data.reports[idx]=rec; else DB.data.reports.push(rec);
+    DB.save(); toast('本月汇报已保存');
+  },
+  text(){
+    const ex=this.current();
+    return '【汇报月份】'+this.monthLabel()
+      +'\n1. 本月实际周均学习时长：'+(ex?ex.hours:this.hours())+'h（计划 37.5h）'
+      +'\n2. 各科进度：数学 '+(ex&&ex.math?ex.math:'__')+'%　｜　专业课 '+(ex&&ex.major?ex.major:'__')+'%　｜　英语 '+(ex&&ex.eng?ex.eng:'__')+'%'
+      +'\n3. 测验/模考成绩：数学 '+(ex&&ex.examMath?ex.examMath:'无')+'　｜　英语 '+(ex&&ex.examEng?ex.examEng:'无')+'　｜　专业课 '+(ex&&ex.examMajor?ex.examMajor:'无')
+      +'\n4. 本月卡点：'+(ex?ex.blocker:'')
+      +'\n5. 下月是否调整计划：'+(ex&&ex.adjust?ex.adjust:'');
+  },
+  copy(){
+    const t=this.text();
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(()=>toast('汇报文本已复制，可直接粘贴')).catch(()=>fallbackCopy(t));
+    }else fallbackCopy(t);
+  }
+};
+function fallbackCopy(text){
+  const ta=document.createElement('textarea'); ta.value=text;
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); toast('汇报文本已复制，可直接粘贴'); }
+  catch(e){ toast('复制失败，请手动复制'); }
+  document.body.removeChild(ta);
+}
+$('#rpSave').addEventListener('click',()=>Report.save());
+$('#rpCopy').addEventListener('click',()=>Report.copy());
+
+// ---- 复习提纲模块 ----
+const Outline={
+  parse(text){
+    const res={}; let skipped=0, sub=null, chap=null;
+    String(text||'').split(/\n+/).forEach(line=>{
+      line=line.trim(); if(!line) return;
+      const sm=line.match(/^【(.+?)】$/);
+      if(sm){ sub=sm[1].trim(); if(!res[sub]) res[sub]=[]; chap=null; return; }
+      let isChap=false;
+      if(/^#/.test(line)){ line=line.replace(/^#+\s*/,''); isChap=true; }
+      else if(/^[-•·]/.test(line)){ line=line.replace(/^[-•·]\s*/,''); }
+      if(!line) return;
+      if(!sub){ skipped++; return; }
+      if(isChap){ chap={t:line,items:[]}; res[sub].push(chap); return; }
+      if(!chap){ chap={t:'未分组',items:[]}; res[sub].push(chap); }
+      chap.items.push({t:line,done:false});
+    });
+    return {res,skipped};
+  },
+  stats(s){
+    const chs=((DB.data.outlines[s]||{}).chapters)||[];
+    const all=chs.reduce((t,c)=>t+(c.items||[]).length,0);
+    const done=chs.reduce((t,c)=>t+(c.items||[]).filter(i=>i.done).length,0);
+    return {all,done,pct:all?Math.round(done/all*100):0,chs};
+  },
+  render(){
+    const o=DB.data.outlines||{};
+    const subs=Object.keys(o).filter(s=>this.stats(s).all>0);
+    $('#outlineSummary').textContent=subs.length?('共 '+subs.length+' 科'):'未导入';
+    const body=$('#outlineBody');
+    if(!subs.length){
+      body.innerHTML='<div class="empty">还没有提纲 · 点下方「导入提纲」粘贴文本导入</div>';
+      return;
+    }
+    body.innerHTML=subs.map(s=>{
+      const st=this.stats(s);
+      return `<div class="ol-subject">
+        <div class="ol-head"><b>${esc(s)}</b><span>${st.done}/${st.all} · ${st.pct}%</span><button class="ol-del" data-s="${esc(s)}" title="删除该科提纲">✕</button></div>
+        <div class="ol-bar"><i style="width:${st.pct}%"></i></div>
+        ${st.chs.map((c,ci)=>c.items.length?`<div class="ol-chap">${esc(c.t)}</div>`+c.items.map((it,ii)=>`<div class="ol-item ${it.done?'done':''}" data-s="${esc(s)}" data-c="${ci}" data-i="${ii}"><button class="plan-check">${it.done?'✓':''}</button><span>${esc(it.t)}</span></div>`).join(''):'').join('')}
+      </div>`;
+    }).join('');
+    body.querySelectorAll('.ol-item').forEach(el=>el.addEventListener('click',()=>Outline.toggle(el.dataset.s,+el.dataset.c,+el.dataset.i)));
+    body.querySelectorAll('.ol-del').forEach(el=>el.addEventListener('click',()=>Outline.remove(el.dataset.s)));
+  },
+  toggle(s,ci,ii){
+    const chs=((DB.data.outlines[s]||{}).chapters)||[];
+    const it=chs[ci]&&chs[ci].items[ii]; if(!it) return;
+    it.done=!it.done; DB.save(); this.render();
+  },
+  remove(s){
+    if(!confirm('删除「'+s+'」的提纲？勾选进度将一并清除')) return;
+    delete DB.data.outlines[s]; DB.save(); this.render(); toast('提纲已删除');
+  },
+  importText(text){
+    const r=this.parse(text);
+    const subs=Object.keys(r.res).filter(s=>r.res[s].length);
+    if(!subs.length){ toast('没有识别到提纲：文本需包含【科目】行'); return; }
+    const dup=subs.filter(s=>DB.data.outlines[s]);
+    if(dup.length && !confirm('科目 '+dup.join('、')+' 已有提纲，导入将覆盖旧内容与勾选进度，继续？')) return;
+    subs.forEach(s=>DB.data.outlines[s]={chapters:r.res[s]});
+    DB.save(); this.render();
+    $('#outlineBox').value='';
+    const total=subs.reduce((t,s)=>t+r.res[s].reduce((x,c)=>x+c.items.length,0),0);
+    toast('提纲已导入：'+subs.join('、')+'，共 '+total+' 个知识点'+(r.skipped?'，跳过 '+r.skipped+' 行':''));
+  },
+  refText(){
+    const o=DB.data.outlines||{};
+    return Object.keys(o).map(s=>{
+      const st=this.stats(s);
+      return st.all?s+' '+st.pct+'%':null;
+    }).filter(Boolean).join(' · ');
+  }
+};
+$('#outlineImport').addEventListener('click',()=>Outline.importText($('#outlineBox').value));
 
 // ================= 8. 院校库模块 =================
 /* 数据条目：[名称, 省份, 层次]  A=985  B=211(非985)  C=双一流(非211)
@@ -1171,11 +1368,10 @@ const College={
     $('#collegeProvs').innerHTML=provs.map(p=>`<button class="chip ${p===this.prov?'sel':''}" data-p="${esc(p)}">${esc(p)}</button>`).join('');
     document.querySelectorAll('#collegeProvs .chip').forEach(b=>b.addEventListener('click',()=>{ this.prov=b.dataset.p; this.render(); }));
     const favs=COLLEGES.filter(c=>{ const n=this.notes()[c.name]; return n&&n.fav; });
-    $('#favCard').classList.toggle('hidden',!favs.length);
-    $('#favList').innerHTML=favs.map(c=>this.itemHtml(c)).join('');
+    $('#favList').innerHTML=favs.length?favs.map(c=>this.itemHtml(c)).join(''):'<div class="empty">还没有目标院校 · 点开下方检索，找到后点 ☆ 收藏</div>';
     this.bindItems('#favList');
-    const list=this.filtered();
-    $('#collegeFilteredCount').textContent='筛选出 '+list.length+' 所';
+    const list=this.filtered().slice().sort((a,b)=>(OPTO_STRONG.has(b.name)?1:0)-(OPTO_STRONG.has(a.name)?1:0));
+    $('#collegeFilteredCount').textContent=list.length;
     $('#collegeList').innerHTML=list.length?list.map(c=>this.itemHtml(c)).join(''):'<div class="empty">没有匹配的院校，试试换个筛选条件</div>';
     this.bindItems('#collegeList');
     $('#collegeSearch').value=this.q;
@@ -1240,76 +1436,94 @@ $('#cdSaveBtn').addEventListener('click',()=>{
 // ================= 9. 我的 / 数据管理 =================
 function renderMine(){
   const d=DB.data;
+  Report.render();
   $('#msDuration').textContent=fmtMin(DB.totalDuration());
-  $('#msAnswered').textContent=d.answered+' 题';
-  $('#msExams').textContent=d.exams.length+' 次'+(d.exams.length?(' · 平均 '+Math.round(d.exams.reduce((t,e)=>t+e.correct/e.total,0)/d.exams.length*100)+' 分'):'');
+  $('#msExams').textContent=(d.sessions||[]).length+' 轮';
   $('#msCheckins').textContent=Object.keys(d.checkins).length+' 天';
-  $('#msWrong').textContent=Object.keys(d.wrongBook).length+' 题';
   $('#msFavs').textContent=Object.values(d.collegeNotes||{}).filter(n=>n.fav).length+' 所';
-  $('#bankCountText').textContent='共 '+d.questions.length+' 题';
 }
 
-// ---- 题库导入：标准化 ----
-function normalizeImport(raw){
-  let arr=null, meta={};
-  if(Array.isArray(raw)) arr=raw;
-  else if(raw && Array.isArray(raw.questions)){ arr=raw.questions; meta=raw.meta||{}; }
-  if(!arr) return {ok:false,msg:'JSON 结构不正确：需要 {meta, questions} 或题目数组'};
-  const added=[], skipped=[];
-  const exist={};
-  DB.data.questions.forEach(q=>exist[q.id]=true);
-  arr.forEach((q,i)=>{
-    if(!q || !q.stem || !Array.isArray(q.options) || q.options.length<2){ skipped.push(i+1); return; }
-    let type=q.type||'single';
-    if(!['single','multi','judge'].includes(type)) type='single';
-    let answer=q.answer;
-    if(type==='multi'){ if(!Array.isArray(answer)||!answer.length){ skipped.push(i+1); return; } }
-    else{ if(typeof answer!=='number'||answer<0||answer>=q.options.length){ skipped.push(i+1); return; } }
-    const id=(q.id&&String(q.id))||((meta.subject||'q')+meta.year+'-'+(i+1)+'-'+uid().slice(-4));
-    const item={
-      id, type,
-      subject:q.subject||meta.subject||'未分类',
-      chapter:q.chapter||meta.chapter||'',
-      year:q.year||meta.year||null,
-      stem:String(q.stem), options:q.options.map(o=>String(o)),
-      answer, explain:q.explain?String(q.explain):'',
-      source:q.source||meta.source||(meta.year?meta.year+'真题':'')
-    };
-    if(exist[item.id]){ // 同 id 覆盖更新
-      const idx=DB.data.questions.findIndex(x=>x.id===item.id);
-      DB.data.questions[idx]=item;
-    }else{
-      DB.data.questions.push(item); added.push(item.id);
-    }
-  });
-  DB.save();
-  return {ok:true, added:added.length, updated:arr.length-added.length-skipped.length, skipped};
-}
-function importFromText(text){
-  if(!text.trim()){ toast('内容为空'); return; }
-  let raw;
-  try{ raw=JSON.parse(text); }
-  catch(e){ toast('JSON 解析失败：'+e.message); return; }
-  const r=normalizeImport(raw);
-  if(!r.ok){ toast(r.msg); return; }
-  toast('导入完成：新增 '+r.added+' 题'+(r.updated?'，更新 '+r.updated+' 题':'')+(r.skipped.length?'，跳过 '+r.skipped.length+' 题（格式有误）':''));
-  $('#importBox').value='';
-  renderMine();
-}
-$('#btnImportPaste').addEventListener('click',()=>importFromText($('#importBox').value));
-$('#btnImportFile').addEventListener('click',()=>{
-  const inp=document.createElement('input');
-  inp.type='file'; inp.accept='.json,application/json';
-  inp.addEventListener('change',()=>{
-    const f=inp.files[0]; if(!f) return;
-    const rd=new FileReader();
-    rd.addEventListener('load',()=>{
-      try{ importFromText(String(rd.result)); }
-      catch(e){ toast('读取文件失败'); }
-    });
-    rd.readAsText(f,'utf-8');
-  });
-  inp.click();
+// ---- 云端同步（GitHub Gist 私有备份库）----
+const Cloud={
+  get token(){ return (DB.data.settings.gtoken||'').trim(); },
+  get gid(){ return (DB.data.settings.gid||'').trim(); },
+  get autoOn(){ return !!DB.data.settings.autoSync; },
+  lastSync:null, busy:false, autoTimer:null,
+  headers(){ return {Authorization:'token '+this.token,'Content-Type':'application/json',Accept:'application/vnd.github+json'}; },
+  status(text){ $('#cloudStatus').textContent=text; },
+  render(){
+    $('#cloudToken').value=DB.data.settings.gtoken||'';
+    $('#cloudGid').value=DB.data.settings.gid||'';
+    $('#cloudAuto').checked=this.autoOn;
+    this.status(this.lastSync?('✅ '+this.lastSync):'未同步');
+  },
+  async api(method,path,body){
+    const res=await fetch('https://api.github.com'+path,{method,headers:this.headers(),body:body?JSON.stringify(body):undefined});
+    if(!res.ok) throw new Error('HTTP '+res.status+(res.status===401?'（Token 无效或过期）':res.status===404?'（云端库 ID 不存在）':''));
+    return res.json();
+  },
+  payload(){ return JSON.stringify(DB.data); },
+  validObj(obj){ return !!(obj&&Array.isArray(obj.questions)&&obj.settings); },
+  async create(){
+    if(!this.token){ toast('请先填写 GitHub Token'); return; }
+    try{
+      const g=await this.api('POST','/gists',{description:'考研助手自动备份（私有）',public:false,files:{'kaoyan-backup.json':{content:this.payload()}}});
+      DB.data.settings.gid=g.id; DB.save(); this.render();
+      toast('云端库创建成功'); this.status('✅ 云端库就绪');
+    }catch(e){ toast('创建失败：'+e.message); }
+  },
+  async upload(silent){
+    if(!this.token||!this.gid){ if(!silent) toast('请先填写 Token 并创建云端库'); return; }
+    try{
+      await this.api('PATCH','/gists/'+this.gid,{files:{'kaoyan-backup.json':{content:this.payload()}}});
+      this.lastSync='已同步 '+new Date().toTimeString().slice(0,5); this.status(this.lastSync);
+      if(!silent) toast('已上传到云端');
+    }catch(e){ this.status('⚠ 同步失败'); if(!silent) toast('上传失败：'+e.message); }
+  },
+  async restore(silent){
+    if(!this.token||!this.gid){ if(!silent) toast('请先填写 Token 并创建云端库'); return; }
+    try{
+      const g=await this.api('GET','/gists/'+this.gid);
+      const f=g.files&&g.files['kaoyan-backup.json'];
+      if(!f){ toast('云端库为空'); return; }
+      const obj=JSON.parse(f.content);
+      if(!this.validObj(obj)){ toast('云端备份格式异常'); return; }
+      if(!silent && !confirm('用云端备份覆盖当前本地数据？')) return;
+      this.busy=true;
+      DB.data=obj; DB.migrate(); DB.save();
+      this.busy=false;
+      this.lastSync='已恢复云端 '+new Date().toTimeString().slice(0,5); this.status(this.lastSync);
+      renderMine(); renderHome();
+      if(!silent){ toast('云端数据已恢复'); }
+    }catch(e){ this.busy=false; this.status('⚠ 恢复失败'); if(!silent) toast('恢复失败：'+e.message); }
+  },
+  auto(){
+    if(this.busy||!this.autoOn||!this.token||!this.gid) return;
+    clearTimeout(this.autoTimer);
+    this.autoTimer=setTimeout(()=>{ if(navigator.onLine) this.upload(true); },5000);
+  },
+  async pullOnStart(){
+    if(!this.autoOn||!this.token||!this.gid||!navigator.onLine) return;
+    try{
+      const g=await this.api('GET','/gists/'+this.gid);
+      const f=g.files&&g.files['kaoyan-backup.json'];
+      if(!f) return;
+      const obj=JSON.parse(f.content);
+      if(!this.validObj(obj)) return;
+      const remote=(obj.meta&&obj.meta.updatedAt)||0;
+      const local=(DB.data.meta&&DB.data.meta.updatedAt)||0;
+      if(remote>local+5000){ this.restore(true); toast('已自动同步云端最新数据'); }
+    }catch(e){}
+  }
+};
+$('#cloudCreate').addEventListener('click',()=>Cloud.create());
+$('#cloudUp').addEventListener('click',()=>Cloud.upload(false));
+$('#cloudDown').addEventListener('click',()=>Cloud.restore(false));
+$('#cloudToken').addEventListener('change',function(){ DB.data.settings.gtoken=this.value.trim(); DB.save(); });
+$('#cloudGid').addEventListener('change',function(){ DB.data.settings.gid=this.value.trim(); DB.save(); });
+$('#cloudAuto').addEventListener('change',function(){
+  DB.data.settings.autoSync=this.checked; DB.save();
+  toast(this.checked?'⚡ 自动同步已开启':'自动同步已关闭');
 });
 
 // ---- 备份 / 恢复 / 清空 ----
@@ -1374,10 +1588,16 @@ if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
 // 初始化（支持 #page-plan 等 hash 直达）
 DB.load();
 const hashPage = location.hash.replace('#','');
-if(['page-home','page-plan','page-quiz','page-college','page-mine'].includes(hashPage)) switchPage(hashPage);
+if(['page-home','page-plan','page-college','page-mine'].includes(hashPage)) switchPage(hashPage);
 else renderHome();
 Pomo.subject=DB.data.settings.pomodoroSubject;
 $('#pomoSilent').checked=!!DB.data.settings.silentMode; // 图书馆模式开关状态回显
+Cloud.render();          // 云端同步配置回显
+Cloud.pullOnStart();     // 自动同步：启动时拉取云端最新备份
+Sched.setVariant(Sched.variant); // 作息表按今天是工作日/周末自动选择
+renderChap();            // 839 章节地图渲染
+Pomo.renderDur();        // 番茄钟专注时长选择
+Pomo.renderBreak();      // 番茄钟休息时长选择
 </script>
 </body>
 </html>
